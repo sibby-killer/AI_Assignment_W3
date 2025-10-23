@@ -22,7 +22,8 @@ pip install -r requirements.txt
 bash
 python -m spacy download en_core_web_sm
 ## 🚀 Quick Setup Guide
-Method 1: Using venv – ✅ Recommended
+Method 1: 
+ - Using venv – ✅ Recommended
 bash
 python -m venv ai_assignment_w3_env
 ### Activate
@@ -68,9 +69,9 @@ streamlit run app.py
 conda deactivate
 ## 🚀 Usage
 1. Train the Machine Learning Models
-bash
+ ``` bash
 python main.py
-This will:
+  This will:
 
  - Train the iris classification model
 
@@ -151,16 +152,16 @@ Architecture: CNN
 ## 🛠️ Technical Details
 Dependencies
 txt
-tensorflow>=2.13.0
-streamlit>=1.28.0
-scikit-learn>=1.3.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-pandas>=2.0.0
-numpy>=1.24.0
-spacy>=3.7.0
-streamlit-drawable-canvas>=0.9.0
-Pillow>=10.0.0
+- tensorflow>=2.13.0
+- streamlit>=1.28.0
+- scikit-learn>=1.3.0
+- matplotlib>=3.7.0
+- seaborn>=0.12.0
+- pandas>=2.0.0
+- numpy>=1.24.0
+- spacy>=3.7.0
+- streamlit-drawable-canvas>=0.9.0
+- Pillow>=10.0.0
 
 ## 📊 Model Performance
 
@@ -207,21 +208,19 @@ Pillow>=10.0.0
  - Update color schemes and layout
  - Add custom Streamlit components
 
-## 🐛 Troubleshooting
+## 🐛 Troubleshooting Common Issues
 
-### **Common Issues**
+ 1. ⚙️ TensorFlow Not Installing
+ ```bash
+ pip install tensorflow-cpu
 
-#### ⚙️ TensorFlow Not Installing
-```bash
-pip install tensorflow-cpu
+ 2. 🧠 spaCy Model Not Found
+ python -m spacy download en_core_web_sm
 
-###  🧠 spaCy Model Not Found
-python -m spacy download en_core_web_sm
+ 3. 🎨 Streamlit Canvas Not Working
+ pip install streamlit-drawable-canvas
 
-### 🎨 Streamlit Canvas Not Working
-pip install streamlit-drawable-canvas
-
-### 💾 Out of Memory During Training
+ 4. 💾 Out of Memory During Training
 
  - Reduce batch size
 
@@ -229,17 +228,36 @@ pip install streamlit-drawable-canvas
 
  - Enable GPU memory growth
 
-### ⚡ Performance Tips
+ 5. Streamlit app shows "Model file not found" error
 
-- Use GPU (tensorflow-gpu)
+ - Solutions:
 
-- Reduce image size
+  - Ensure model file is tracked by Git:
 
-- Use smaller batches
+ ```bash
+ git add -f models/digit_recognition_model.h5
+ git commit -m "Add model file"
+ git push origin main
 
-- Enable early stopping
+  - Use Git LFS for large files:
 
-### 📈 Results and Demos
+ ```bash
+
+ git lfs install
+ git lfs track "models/*.h5"
+ git add .gitattributes
+
+## ⚡ Performance Tips
+
+ - Use GPU (tensorflow-gpu)
+
+ - Reduce image size
+
+ - Use smaller batches
+
+ - Enable early stopping
+
+## 📈 Results and Demos
  - 🧮 Real-time digit classification
 
  - 📊 Model accuracy and loss graphs
@@ -247,50 +265,42 @@ pip install streamlit-drawable-canvas
  - 💬 Sentiment distribution from product reviews
 
 ## 🤝 Contributing
-We welcome contributions!
+ We welcome contributions!
 
-bash
-# Fork the repository
-git checkout -b feature/amazing-feature
+ ``` bash
+ - Fork the repository
+ git checkout -b feature/amazing-feature
 
-# Commit your changes
-git commit -m "Add amazing feature"
+ - Commit your changes
+ git commit -m "Add amazing feature"
 
-# Push to the branch
-git push origin feature/amazing-feature
-Then, open a Pull Request 🚀
+ - Push to the branch
+ git push origin feature/amazing-feature
+ Then, open a Pull Request 🚀
 
 ## 📝 License
-This project is licensed under the MIT License — see the LICENSE file for details.
+ This project is licensed under the MIT License — see the LICENSE file for details.
 
 
 ## 👥 Team
 
-| Name               | Role                                   | Email |
-|--------------------|----------------------------------------|--------|
-| **Christine Mirimba** | Machine Learning Engineer              | [mirimbachristine@gmail.com](mailto:mirimbachristine@gmail.com) |
-| **Alfred Nyongesa**  | Data Analyst & System Optimization     | [alfred.dev8@gmail.com](mailto:alfred.dev8@gmail.com) |
-| **Hannah Shekinah**  | AI Ethics & Sustainability Specialist  | [hannahshekinah@gmail.com](mailto:hannahshekinah@gmail.com) |
-| **Joelina Quarshie** | Technical Writer & Research Coordinator | [joelinakq@gmail.com](mailto:joelinakq@gmail.com) |
+ | Name               | Role                                   | Email |
+ |--------------------|----------------------------------------|--------|
+ | **Christine Mirimba** | Machine Learning Engineer              | [mirimbachristine@gmail.com](mailto:mirimbachristine@gmail.com) |
+ | **Alfred Nyongesa**  | Data Analyst & System Optimization     | [alfred.dev8@gmail.com](mailto:alfred.dev8@gmail.com) |
+ | **Hannah Shekinah**  | AI Ethics & Sustainability Specialist  | [hannahshekinah@gmail.com](mailto:hannahshekinah@gmail.com) |
+ | **Joelina Quarshie** | Technical Writer & Research Coordinator | [joelinakq@gmail.com](mailto:joelinakq@gmail.com) |
 
-## 👩‍💻 Author
-Christine Mirimba Machine Learning Engineer • Full-stack Developer • UX Designer
 
-📫 Email: mirimbachristine@gmail.com
-
-🐙 GitHub: @christinemirimba
-
-🎓 Project: Digit Recognition System
-
-Passionate about building inclusive, data-driven solutions that empower communities and drive real-world change.
 
 ## 🙏 Acknowledgments
-MNIST dataset providers
 
-Scikit-learn team
+ - MNIST dataset providers
 
-Streamlit team
+ - Scikit-learn team
 
-TensorFlow team
+ - Streamlit team
 
-## ⭐ If you find this project helpful, don't forget to give it a star! Built with ❤️ using Python, TensorFlow, and Streamlit 
+ - TensorFlow team
+ 
+## ⭐ If you find this project helpful, don't forget to give it a star!   Built with ❤️ using Python, TensorFlow, and Streamlit 
