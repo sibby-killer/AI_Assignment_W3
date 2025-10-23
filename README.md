@@ -1,13 +1,10 @@
 # 🧠 AI Assignment Week 3 – Machine Learning Web App
 An interactive Streamlit-based AI application that integrates multiple machine learning models — including handwritten digit recognition, iris classification, and text analysis — into a single, user-friendly web interface.
 
-https://img.shields.io/badge/Python-3.8%252B-blue
-https://img.shields.io/badge/TensorFlow-2.13%252B-orange
-https://img.shields.io/badge/Streamlit-1.28%252B-red
-https://img.shields.io/badge/License-MIT-green
+## 🔗 Live Demo: https://digit-predict-ai.streamlit.app/
 
 ## 🧩 Project Overview
-This project demonstrates practical machine learning and data science concepts through a visual and interactive web app built using TensorFlow, Scikit-learn, and Streamlit. It provides an easy-to-use interface for training, testing, and visualizing models on different datasets.
+This project demonstrates practical machine learning and data science concepts through a visual and interactive web app built using TensorFlow, Scikit-learn, and Streamlit. It provides an intuitive interface for training, testing, and visualizing models across diverse datasets.
 
 ## ⚙️ Installation
 1. Clone the Repository
@@ -24,7 +21,47 @@ pip install -r requirements.txt
 4. Download spaCy English Model
 bash
 python -m spacy download en_core_web_sm
-🚀 Usage
+## 🚀 Quick Setup Guide
+Method 1: Using venv – ✅ Recommended
+bash
+python -m venv ai_assignment_w3_env
+# Activate
+ai_assignment_w3_env\Scripts\activate  # Windows
+source ai_assignment_w3_env/bin/activate  # Mac/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Optional: CPU-only TensorFlow
+pip install tensorflow-cpu
+
+# Download spaCy model
+python -m spacy download en_core_web_sm
+
+# Install Streamlit canvas
+pip install streamlit-drawable-canvas
+
+# Run training
+python main.py
+
+# Launch app
+streamlit run app.py
+
+# Deactivate
+deactivate
+Method 2: Using conda
+bash
+conda create -n ai_assignment_w3 python=3.9
+conda activate ai_assignment_w3
+
+pip install tensorflow scikit-learn spacy matplotlib seaborn pandas numpy streamlit pillow
+python -m spacy download en_core_web_sm
+
+python main.py
+streamlit run app.py
+
+conda deactivate
+## 🚀 Usage
 1. Train the Machine Learning Models
 bash
 python main.py
@@ -43,9 +80,9 @@ bash
 streamlit run app.py
 The app will open in your default browser at http://localhost:8501
 
-## 🧠 Machine Learning Models
+🧠 Machine Learning Models
 1. Handwritten Digit Recognition
-Architecture: Convolutional Neural Network (CNN)
+Architecture: CNN
 
 Layers: 5 convolutional, 3 dense layers with dropout
 
@@ -93,9 +130,7 @@ Model accuracy verification
 
 Performance benchmarking
 
-📊 Output and Analysis
-The system produces rich analytical outputs including:
-
+## 📊 Output and Analysis
 Model performance metrics (accuracy, precision, recall)
 
 Training history visualizations
@@ -126,18 +161,18 @@ Model	Accuracy	Precision	Recall	Training Time
 Digit Recognition	98.2%	98.1%	98.0%	~5 minutes
 Iris Classification	96.7%	96.5%	96.7%	<1 second
 Text Analysis	-	-	-	<1 second
-🎮 How to Use the Web App
+## 🎮 How to Use the Web App
 Drawing Tab ✏️
 Draw a digit (0–9) in the canvas
 
-Click "Classify Drawing"
+Click Classify Drawing
 
-View real-time predictions and confidence scores
+View predictions and confidence scores
 
 Upload Tab 📤
-Upload an image containing a handwritten digit
+Upload a digit image
 
-Click "Analyze Uploaded Image"
+Click Analyze Uploaded Image
 
 View classification results
 
@@ -150,23 +185,23 @@ Download sample images
 
 🔧 Customization
 Adding New Models
-Add model training code to main.py
+Add training code to main.py
 
-Update the web interface in app.py
+Update UI in app.py
 
-Add new visualization functions
+Add visualization functions
 
 Modifying Text Analysis
-Update product reviews in the text_analysis() function
+Update reviews in text_analysis()
 
-Modify sentiment lexicons for different domains
+Modify sentiment lexicons
 
-Add new entity recognition patterns
+Add new entity patterns
 
 Styling Changes
-Modify CSS in the st.markdown() sections
+Modify CSS in st.markdown()
 
-Update color schemes and layouts
+Update color schemes and layout
 
 Add custom Streamlit components
 
@@ -175,7 +210,7 @@ Common Issues
 TensorFlow not installing
 
 bash
-pip install tensorflow-cpu  # For CPU-only systems
+pip install tensorflow-cpu
 spaCy model not found
 
 bash
@@ -186,49 +221,41 @@ bash
 pip install streamlit-drawable-canvas
 Out of memory during training
 
-Reduce batch size in main.py
+Reduce batch size
 
-Use a smaller model architecture
+Use smaller architecture
 
 Enable GPU memory growth
 
 Performance Tips
-Use GPU for faster training (tensorflow-gpu)
+Use GPU (tensorflow-gpu)
 
-Reduce image size for quicker processing
+Reduce image size
 
-Use smaller batches if memory is limited
+Use smaller batches
 
-Enable early stopping to prevent overfitting
+Enable early stopping
 
-## 📈 Results and Demos
-🧮 Sample Predictions
-Real-time digit classification with confidence scores
+### 📈 Results and Demos
+🧮 Real-time digit classification
 
-📊 Model Analytics
-Model accuracy and loss during training
+📊 Model accuracy and loss graphs
 
-💬 Text Analysis
-Product review sentiment distribution
+💬 Sentiment distribution from product reviews
 
 ## 🤝 Contributing
 We welcome contributions!
 
-Fork the repository
-
-Create a feature branch
-
 bash
+# Fork the repository
 git checkout -b feature/amazing-feature
-Commit your changes
 
-bash
+# Commit your changes
 git commit -m "Add amazing feature"
-Push to the branch
 
-bash
+# Push to the branch
 git push origin feature/amazing-feature
-Open a Pull Request
+Then, open a Pull Request 🚀
 
 ## 📝 License
 This project is licensed under the MIT License — see the LICENSE file for details.
@@ -240,19 +267,24 @@ Alfred Nyongesa	Data Analyst & System Optimization	alfred.dev8@gmail.com
 Hannah Shekinah	AI Ethics & Sustainability Specialist	hannahshekinah@gmail.com
 Joelina Quarshie	Technical Writer & Research Coordinator	joelinakq@gmail.com
 
-GitHub: @christinemirimba
+## 👩‍💻 Author
+Christine Mirimba Machine Learning Engineer • Full-stack Developer • UX Designer
 
-Project: Digit Recognition System
+📫 Email: mirimbachristine@gmail.com
+
+🐙 GitHub: @christinemirimba
+
+🎓 Project: Digit Recognition System
+
+Passionate about building inclusive, data-driven solutions that empower communities and drive real-world change.
+
 ## 🙏 Acknowledgments
 MNIST dataset providers
 
-Scikit-learn team for machine learning tools
+Scikit-learn team
 
-Streamlit team for the amazing web framework
+Streamlit team
 
-TensorFlow team for deep learning capabilities
+TensorFlow team
 
-## ⭐ If you find this project helpful, don't forget to give it a star!
-
-## Built with ❤️ using Python, TensorFlow, and Streamlit
-
+## ⭐ If you find this project helpful, don't forget to give it a star! Built with ❤️ using Python, TensorFlow, and Streamlit 
