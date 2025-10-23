@@ -11,6 +11,7 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.metrics import accuracy_score, precision_score, recall_score, classification_report, confusion_matrix
+import joblib
 import os
 import warnings
 import random
@@ -103,6 +104,11 @@ def iris_classification():
         clf.fit(X_train, y_train)
         print("✅ Model training completed")
         
+        # Save the trained model
+        model_path = 'models/iris_model.pkl'
+        joblib.dump(clf, model_path)
+        print(f"💾 Iris model saved to: {model_path}")
+        
         # Model evaluation
         y_pred = clf.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
@@ -163,20 +169,79 @@ def iris_classification():
             'precision': float(precision),
             'recall': float(recall),
             'feature_importance': {feature: float(imp) for feature, imp in feature_importance},
-            'test_samples': int(len(y_test))
+            'test_samples': int(len(y_test)),
+            'model_info': {
+                'model_type': 'DecisionTreeClassifier',
+                'max_depth': 3,
+                'random_state': 42
+            }
         }
         
         with open('output/iris_analysis/performance.json', 'w') as f:
             json.dump(performance_data, f, indent=2)
         
+        # Create dataset analysis for Streamlit app
+        create_iris_dataset_analysis(iris)
+        
         print("💾 Analysis saved to: output/iris_analysis/")
-        return accuracy, clf
+        return accuracy, clf, iris
         
     except Exception as e:
         print(f"❌ Error in iris classification: {e}")
         import traceback
         traceback.print_exc()
-        return 0.0, None
+        return 0.0, None, None
+
+def create_iris_dataset_analysis(iris):
+    """Create additional dataset analysis for Streamlit app"""
+    try:
+        # Create comprehensive dataset analysis
+        df = pd.DataFrame(iris.data, columns=iris.feature_names)
+        df['species'] = [iris.target_names[i] for i in iris.target]
+        
+        # Feature distributions by species
+        plt.figure(figsize=(15, 10))
+        features = iris.feature_names
+        
+        for i, feature in enumerate(features):
+            plt.subplot(2, 2, i+1)
+            for species in iris.target_names:
+                species_data = df[df['species'] == species][feature]
+                plt.hist(species_data, alpha=0.7, label=species, bins=15)
+            plt.xlabel(feature)
+            plt.ylabel('Frequency')
+            plt.legend()
+            plt.title(f'Distribution of {feature}')
+        
+        plt.tight_layout()
+        plt.savefig('output/iris_analysis/feature_distributions.png', 
+                    dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+        
+        # Correlation heatmap
+        plt.figure(figsize=(10, 8))
+        numeric_df = df.drop('species', axis=1)
+        corr_matrix = numeric_df.corr()
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0)
+        plt.title('Feature Correlation Matrix')
+        plt.tight_layout()
+        plt.savefig('output/iris_analysis/correlation_heatmap.png',
+                   dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+        
+        # Pairplot
+        plt.figure(figsize=(12, 10))
+        pairplot_data = df.copy()
+        g = sns.pairplot(pairplot_data, hue='species', palette='husl', diag_kind='hist')
+        g.fig.suptitle('Iris Dataset Pairplot', y=1.02)
+        plt.savefig('output/iris_analysis/pairplot.png',
+                   dpi=300, bbox_inches='tight', facecolor='white')
+        plt.close()
+        
+        print("✅ Additional Iris dataset analysis created for Streamlit app")
+        
+    except Exception as e:
+        print(f"❌ Error creating Iris dataset analysis: {e}")
 
 # =============================================================================
 # MODULE 2: HANDWRITTEN DIGIT RECOGNITION - IMPROVED FOR ACCURACY
@@ -655,7 +720,8 @@ def text_analysis():
             'word_frequency': {
                 'positive_words': pos_total,
                 'negative_words': neg_total
-            }
+            },
+            'nlp_engine': 'spaCy' if SPACY_AVAILABLE else 'Basic'
         }
         
         with open('output/nlp_analysis/summary.json', 'w') as f:
@@ -706,6 +772,32 @@ def basic_text_analysis():
     
     return len(reviews), sentiment_counts, []
 
+def save_nlp_resources():
+    """Save NLP resources for Streamlit app"""
+    try:
+        # Save sentiment lexicon
+        sentiment_lexicon = {
+            'positive_words': [
+                "love", "amazing", "perfectly", "fantastic", "incredible", "best", 
+                "highly", "great", "excellent", "awesome", "recommended", "good",
+                "fantastic", "wonderful", "outstanding", "superb", "brilliant",
+                "exceptional", "outstanding", "perfect", "responsive", "comfortable"
+            ],
+            'negative_words': [
+                "terrible", "poor", "awful", "cheap", "bad", "horrible", "disappointed",
+                "unhelpful", "cracked", "worst", "disappointing", "frustrating", 
+                "useless", "broken", "expensive", "jams", "shorter", "stopped"
+            ]
+        }
+        
+        with open('output/nlp_analysis/sentiment_lexicon.json', 'w') as f:
+            json.dump(sentiment_lexicon, f, indent=2)
+        
+        print("✅ NLP resources saved for Streamlit app")
+        
+    except Exception as e:
+        print(f"❌ Error saving NLP resources: {e}")
+
 # =============================================================================
 # MAIN EXECUTION
 # =============================================================================
@@ -721,7 +813,7 @@ if __name__ == "__main__":
         print("\n" + "="*60)
         print("EXECUTING: Iris Classification")
         print("="*60)
-        iris_accuracy, iris_model = iris_classification()
+        iris_accuracy, iris_model, iris_data = iris_classification()
         results['iris'] = {'accuracy': iris_accuracy, 'success': iris_model is not None}
         
         print("\n" + "="*60)
@@ -735,6 +827,9 @@ if __name__ == "__main__":
         print("="*60)
         reviews_count, sentiment_stats, text_results = text_analysis()
         results['text'] = {'reviews_processed': reviews_count, 'success': True}
+        
+        # Save additional resources for Streamlit app
+        save_nlp_resources()
         
     except Exception as e:
         print(f"❌ Pipeline execution error: {e}")
@@ -780,6 +875,7 @@ if __name__ == "__main__":
     
     print(f"\n💾 Output Files Generated:")
     print(f"   Models:          models/digit_recognition_model.h5")
+    print(f"                   models/iris_model.pkl")
     print(f"   Visualizations:  output/iris_analysis/")
     print(f"                   output/digit_recognition/")
     print(f"                   output/nlp_analysis/")
@@ -787,7 +883,7 @@ if __name__ == "__main__":
     
     print(f"\n🚀 Next Steps:")
     print(f"   To launch the interactive app: streamlit run app.py")
-    print(f"   The app provides real-time digit recognition with drawing interface")
+    print(f"   The app provides three modules: Digit Recognition, Iris Classification, and Text Analysis")
     
     print(f"\n🕒 Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("="*60)

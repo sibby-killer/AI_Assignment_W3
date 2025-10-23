@@ -17,8 +17,8 @@
       ]
     ],
     "products": [
-      "Apple",
-      "iPhone"
+      "iPhone",
+      "Apple"
     ],
     "sentiment": "Positive",
     "positive_words": 2,
@@ -129,8 +129,8 @@
       ]
     ],
     "products": [
-      "Microsoft",
-      "Microsoft Surface"
+      "Microsoft Surface",
+      "Microsoft"
     ],
     "sentiment": "Positive",
     "positive_words": 1,
@@ -151,8 +151,8 @@
       ]
     ],
     "products": [
-      "Lenovo ThinkPad",
-      "Lenovo"
+      "Lenovo",
+      "Lenovo ThinkPad"
     ],
     "sentiment": "Neutral",
     "positive_words": 1,

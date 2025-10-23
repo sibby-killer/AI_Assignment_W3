@@ -1,15 +1,22 @@
 """
 Digital Vision AI - Interactive Web Application
-Real-time digit recognition with drawing interface
+Complete ML Pipeline with Three Modules
 """
 
 import streamlit as st
 import numpy as np
-from PIL import Image, ImageOps, ImageFilter, ImageDraw
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+from PIL import Image, ImageOps, ImageFilter, ImageDraw
 import os
 import io
 import base64
+import json
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.metrics import accuracy_score, precision_score, recall_score, classification_report, confusion_matrix
 
 # Page configuration
 st.set_page_config(
@@ -57,135 +64,96 @@ st.markdown("""
         border: 1px solid #ffeaa7;
         color: #856404;
     }
-    .canvas-container {
-        border: 2px solid #1f77b4;
-        border-radius: 10px;
-        padding: 10px;
-        background-color: #f8f9fa;
-        margin-bottom: 1rem;
-    }
     .stButton button {
         width: 100%;
         border-radius: 5px;
         font-weight: bold;
         margin: 2px 0;
     }
-    .download-link {
-        display: block;
-        text-align: center;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border-radius: 5px;
-        text-decoration: none;
-        margin: 5px 0;
-    }
-    .download-link:hover {
-        background-color: #0056b3;
-        color: white;
-        text-decoration: none;
-    }
-    .input-section {
-        border-right: 2px solid #e0e0e0;
-        padding-right: 20px;
-    }
-    .results-section {
-        padding-left: 20px;
+    .tab-content {
+        padding: 20px 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
+# =============================================================================
+# MODEL LOADING FUNCTIONS
+# =============================================================================
+
 @st.cache_resource
 def load_digit_model():
-    """Load the pre-trained digit recognition model with comprehensive error handling"""
+    """Load the pre-trained digit recognition model"""
     try:
         import tensorflow as tf
-        import os
-        
         model_path = 'models/digit_recognition_model.h5'
         
-        # Debug information
-        st.sidebar.write("🔍 Model loading debug:")
-        st.sidebar.write(f"📁 Model path: {model_path}")
-        st.sidebar.write(f"📁 File exists: {os.path.exists(model_path)}")
-        
         if os.path.exists(model_path):
-            file_size = os.path.getsize(model_path) / (1024 * 1024)  # Size in MB
-            st.sidebar.write(f"📏 File size: {file_size:.2f} MB")
-            
-            if file_size < 0.1:  # If file is too small, it's probably corrupted
-                st.sidebar.error("❌ Model file appears corrupted (too small)")
-                return None
-        
-        try:
-            # Try to load with different options
-            model = tf.keras.models.load_model(
-                model_path,
-                compile=False  # Try without compilation first
-            )
-            
-            # If successful, compile it
-            model.compile(
-                optimizer='adam',
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy']
-            )
-            
-            st.sidebar.success("✅ Model loaded successfully!")
+            model = tf.keras.models.load_model(model_path)
             return model
-            
-        except Exception as load_error:
-            st.sidebar.error(f"❌ TensorFlow loading error: {str(load_error)}")
-            
-            # Try alternative loading method
-            try:
-                st.sidebar.info("🔄 Trying alternative loading method...")
-                from tensorflow.keras.models import load_model
-                model = load_model(model_path)
-                st.sidebar.success("✅ Model loaded with alternative method!")
-                return model
-            except Exception as alt_error:
-                st.sidebar.error(f"❌ Alternative loading failed: {str(alt_error)}")
-                return None
-                
-    except ImportError as e:
-        st.sidebar.error(f"❌ TensorFlow import error: {e}")
+        else:
+            st.warning("Digit recognition model not found. Please run main.py first.")
+            return None
+    except ImportError:
+        st.error("TensorFlow not available. Please install TensorFlow.")
         return None
     except Exception as e:
-        st.sidebar.error(f"❌ Unexpected error: {e}")
+        st.error(f"Error loading digit model: {e}")
         return None
 
-def create_fallback_model():
-    """Create a simple fallback model when the main model fails to load"""
+@st.cache_resource
+def load_iris_model():
+    """Train or load Iris classification model"""
     try:
-        import tensorflow as tf
+        # Load Iris dataset
+        iris = load_iris()
+        X, y = iris.data, iris.target
         
-        st.sidebar.warning("🔄 Creating fallback model...")
+        # Train model (or load if saved)
+        model_path = 'models/iris_model.pkl'
+        if os.path.exists(model_path):
+            import joblib
+            model = joblib.load(model_path)
+        else:
+            # Train new model
+            X_train, X_test, y_train, y_test = train_test_split(
+                X, y, test_size=0.2, random_state=42
+            )
+            model = DecisionTreeClassifier(max_depth=3, random_state=42)
+            model.fit(X_train, y_train)
+            
+            # Save model
+            os.makedirs('models', exist_ok=True)
+            joblib.dump(model, model_path)
         
-        # Simple CNN architecture
-        model = tf.keras.Sequential([
-            tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
-            tf.keras.layers.MaxPooling2D((2, 2)),
-            tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(64, activation='relu'),
-            tf.keras.layers.Dense(10, activation='softmax')
-        ])
-        
-        model.compile(
-            optimizer='adam',
-            loss='sparse_categorical_crossentropy',
-            metrics=['accuracy']
-        )
-        
-        st.sidebar.info("📝 Using fallback model (basic accuracy)")
-        return model
-        
+        return model, iris
     except Exception as e:
-        st.sidebar.error(f"❌ Fallback model creation failed: {e}")
+        st.error(f"Error with Iris model: {e}")
+        return None, None
+
+def initialize_nlp():
+    """Initialize NLP components"""
+    try:
+        import spacy
+        from spacy.matcher import PhraseMatcher
+        
+        # Try to load spaCy model
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            st.warning("spaCy English model not found. Using basic text analysis.")
+            nlp = None
+        
+        return nlp
+    except ImportError:
+        st.warning("spaCy not available. Using basic text analysis.")
         return None
+
+# =============================================================================
+# DIGIT RECOGNITION FUNCTIONS
+# =============================================================================
 
 def preprocess_digit_image(image):
-    """Preprocess image for digit recognition model - FIXED for correct prediction"""
+    """Preprocess image for digit recognition model"""
     try:
         # Convert to grayscale if needed
         if image.mode != 'L':
@@ -201,135 +169,23 @@ def preprocess_digit_image(image):
         image_array = image_array / 255.0
         
         # MNIST expects white digits on black background
-        # If the image has light background (mean > 0.5), invert it
         if np.mean(image_array) > 0.5:
             image_array = 1.0 - image_array
         
-        # Ensure the digit is prominent - enhance contrast
+        # Ensure the digit is prominent
         image_array = (image_array - np.min(image_array)) / (np.max(image_array) - np.min(image_array) + 1e-8)
         
-        # Reshape for model input (batch_size, height, width, channels)
+        # Reshape for model input
         image_array = image_array.reshape(1, 28, 28, 1)
         
         return image_array
     except Exception as e:
-        st.error(f"❌ Image preprocessing error: {e}")
+        st.error(f"Image preprocessing error: {e}")
         return None
 
-def enhance_digit_image(image):
-    """Enhance digit image for better recognition using PIL only"""
-    try:
-        # Convert to numpy array for processing
-        img_array = np.array(image)
-        
-        # Simple contrast enhancement using PIL
-        if image.mode == 'L':
-            # Use PIL's built-in enhancement
-            from PIL import ImageEnhance
-            enhancer = ImageEnhance.Contrast(image)
-            enhanced_image = enhancer.enhance(2.0)  # Increase contrast
-        else:
-            enhanced_image = image
-        
-        return enhanced_image
-    except Exception as e:
-        st.warning(f"⚠️ Image enhancement failed: {e}")
-        return image
-
-def create_handwritten_digit(digit):
-    """Create a proper handwritten-like digit for testing"""
-    try:
-        # Create a black background
-        img = Image.new('L', (28, 28), color=0)
-        draw = ImageDraw.Draw(img)
-        
-        # Define digit drawing patterns (simplified for better recognition)
-        digit_patterns = {
-            0: [(7, 5), (21, 5), (24, 10), (24, 18), (21, 23), (7, 23), (4, 18), (4, 10), (7, 5)],
-            1: [(14, 5), (14, 23)],
-            2: [(5, 5), (20, 5), (23, 10), (20, 15), (5, 15), (5, 23), (23, 23)],
-            3: [(5, 5), (20, 5), (23, 10), (20, 14), (23, 18), (20, 23), (5, 23)],
-            4: [(20, 5), (20, 23), (5, 15), (23, 15)],
-            5: [(23, 5), (5, 5), (5, 14), (23, 14), (23, 23), (5, 23)],
-            6: [(20, 5), (5, 5), (5, 23), (23, 23), (23, 14), (5, 14)],
-            7: [(5, 5), (23, 5), (15, 23)],
-            8: [(5, 5), (23, 5), (23, 23), (5, 23), (5, 5), (5, 14), (23, 14)],
-            9: [(23, 5), (23, 23), (5, 23), (5, 14), (23, 14)]
-        }
-        
-        if digit in digit_patterns:
-            points = digit_patterns[digit]
-            # Draw the digit with white color (255)
-            if len(points) > 1:
-                draw.line(points, fill=255, width=2)
-        
-        return img
-    except Exception as e:
-        st.error(f"❌ Error creating handwritten digit: {e}")
-        return create_sample_digit(digit)
-
-def create_sample_digit(digit):
-    """Generate a clean sample digit image for demonstration"""
-    try:
-        fig, ax = plt.subplots(figsize=(2, 2))
-        ax.text(0.5, 0.5, str(digit), fontsize=120, ha='center', va='center', 
-                color='white', weight='bold')
-        ax.set_facecolor('black')
-        ax.axis('off')
-        
-        # Convert plot to image
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0, 
-                    facecolor='black', dpi=100)
-        buf.seek(0)
-        image = Image.open(buf)
-        plt.close()
-        
-        return image
-    except Exception as e:
-        st.error(f"❌ Error creating sample digit: {e}")
-        return None
-
-def get_image_download_link(img, filename="digit.png", text="📥 Download Drawing"):
-    """Generate a download link for the image"""
-    try:
-        if img is None:
-            return "❌ No image available to download"
-        buffered = io.BytesIO()
-        img.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        href = f'<a href="data:file/png;base64,{img_str}" download="{filename}" class="download-link">{text}</a>'
-        return href
-    except Exception as e:
-        return f"❌ Error creating download link: {e}"
-
-def clear_canvas():
-    """Clear the canvas session state"""
-    if 'canvas_data' in st.session_state:
-        del st.session_state.canvas_data
-    if 'drawing_result' in st.session_state:
-        del st.session_state.drawing_result
-    st.success("✅ Canvas cleared!")
-
-def initialize_session_state():
-    """Initialize session state variables"""
-    if 'last_drawing' not in st.session_state:
-        st.session_state.last_drawing = None
-    if 'sample_image' not in st.session_state:
-        st.session_state.sample_image = None
-    if 'sample_digit' not in st.session_state:
-        st.session_state.sample_digit = 3
-    if 'sample_result' not in st.session_state:
-        st.session_state.sample_result = None
-    if 'upload_result' not in st.session_state:
-        st.session_state.upload_result = None
-    if 'drawing_result' not in st.session_state:
-        st.session_state.drawing_result = None
-
-def display_prediction_results(predicted_digit, confidence, probabilities, true_digit=None, input_type="input"):
-    """Display comprehensive prediction results"""
+def display_digit_prediction_results(predicted_digit, confidence, probabilities, true_digit=None):
+    """Display comprehensive prediction results for digits"""
     
-    # Determine if prediction is correct
     is_correct = true_digit is not None and predicted_digit == true_digit
     
     # Main prediction result
@@ -341,46 +197,27 @@ def display_prediction_results(predicted_digit, confidence, probabilities, true_
         else:
             st.markdown(f'<div class="success-box"><h3>🎯 Prediction: {predicted_digit}</h3></div>', unsafe_allow_html=True)
     
-    # Confidence metrics in columns
+    # Confidence metrics
     col1, col2, col3 = st.columns(3)
-    
     with col1:
         st.metric("Confidence Score", f"{confidence:.2%}")
-    
     with col2:
-        if confidence > 0.9:
-            status = "🎉 Very High"
-        elif confidence > 0.7:
-            status = "👍 High" 
-        elif confidence > 0.5:
-            status = "🤔 Medium"
-        else:
-            status = "⚠️ Low"
+        status = "🎉 Very High" if confidence > 0.9 else "👍 High" if confidence > 0.7 else "🤔 Medium" if confidence > 0.5 else "⚠️ Low"
         st.metric("Confidence Level", status)
-    
     with col3:
         certainty = "Excellent" if confidence > 0.8 else "Good" if confidence > 0.6 else "Fair"
         st.metric("Model Certainty", certainty)
     
-    # Probability distribution chart
+    # Probability distribution
     st.subheader("📈 Probability Distribution Across Digits")
     fig, ax = plt.subplots(figsize=(12, 4))
-    
-    # Create bars for all digits
     bars = ax.bar(range(10), probabilities, color='lightblue', alpha=0.7, edgecolor='navy', linewidth=1)
-    
-    # Highlight the predicted digit
     bars[predicted_digit].set_color('gold')
     bars[predicted_digit].set_alpha(1.0)
-    bars[predicted_digit].set_edgecolor('darkorange')
-    bars[predicted_digit].set_linewidth(2)
     
-    # Highlight true digit if available
     if true_digit is not None and true_digit != predicted_digit:
         bars[true_digit].set_color('red')
         bars[true_digit].set_alpha(0.8)
-        bars[true_digit].set_edgecolor('darkred')
-        bars[true_digit].set_linewidth(2)
     
     ax.set_xlabel('Digit (0-9)', fontsize=12, fontweight='bold')
     ax.set_ylabel('Probability', fontsize=12, fontweight='bold')
@@ -389,178 +226,310 @@ def display_prediction_results(predicted_digit, confidence, probabilities, true_
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 1)
     
-    # Add value labels on bars
     for i, (bar, prob) in enumerate(zip(bars, probabilities)):
         ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
                 f'{prob:.3f}', ha='center', va='bottom', fontsize=10, 
-                fontweight='bold' if i == predicted_digit else 'normal',
-                color='black' if i != predicted_digit else 'darkred')
+                fontweight='bold' if i == predicted_digit else 'normal')
     
-    st.pyplot(fig, use_container_width=True)
+    st.pyplot(fig)
+
+# =============================================================================
+# IRIS CLASSIFICATION FUNCTIONS
+# =============================================================================
+
+def predict_iris_species(model, iris, features):
+    """Predict iris species based on input features"""
+    try:
+        prediction = model.predict([features])[0]
+        probabilities = model.predict_proba([features])[0]
+        species_name = iris.target_names[prediction]
+        return species_name, probabilities[prediction], probabilities
+    except Exception as e:
+        st.error(f"Prediction error: {e}")
+        return None, 0.0, []
+
+def display_iris_analysis():
+    """Display comprehensive Iris dataset analysis"""
+    try:
+        # Load data
+        iris = load_iris()
+        df = pd.DataFrame(iris.data, columns=iris.feature_names)
+        df['species'] = [iris.target_names[i] for i in iris.target]
+        
+        st.subheader("📊 Iris Dataset Overview")
+        
+        # Dataset info
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Total Samples", len(df))
+        with col2:
+            st.metric("Features", len(iris.feature_names))
+        with col3:
+            st.metric("Species", len(iris.target_names))
+        
+        # Data preview
+        with st.expander("View Dataset Sample"):
+            st.dataframe(df.head(10))
+        
+        # Visualization
+        st.subheader("📈 Data Visualization")
+        
+        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+        
+        # Feature distributions
+        features = iris.feature_names[:4]
+        for i, feature in enumerate(features):
+            ax = axes[i//2, i%2]
+            for species in iris.target_names:
+                species_data = df[df['species'] == species][feature]
+                ax.hist(species_data, alpha=0.7, label=species, bins=15)
+            ax.set_xlabel(feature)
+            ax.set_ylabel('Frequency')
+            ax.legend()
+            ax.set_title(f'Distribution of {feature}')
+        
+        plt.tight_layout()
+        st.pyplot(fig)
+        
+        # Correlation heatmap
+        st.subheader("🔗 Feature Correlation Heatmap")
+        numeric_df = df.drop('species', axis=1)
+        corr_matrix = numeric_df.corr()
+        
+        fig, ax = plt.subplots(figsize=(8, 6))
+        sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0, ax=ax)
+        ax.set_title('Feature Correlation Matrix')
+        st.pyplot(fig)
+        
+    except Exception as e:
+        st.error(f"Error in Iris analysis: {e}")
+
+# =============================================================================
+# TEXT ANALYSIS FUNCTIONS
+# =============================================================================
+
+def analyze_sentiment(text, nlp=None):
+    """Analyze sentiment of text using rule-based approach"""
+    positive_words = {
+        "love", "amazing", "perfectly", "fantastic", "incredible", "best", 
+        "highly", "great", "excellent", "awesome", "recommended", "good",
+        "fantastic", "wonderful", "outstanding", "superb", "brilliant",
+        "exceptional", "outstanding", "perfect", "responsive", "comfortable"
+    }
     
-    # Detailed insights based on confidence
-    st.subheader("💡 Analysis Insights")
+    negative_words = {
+        "terrible", "poor", "awful", "cheap", "bad", "horrible", "disappointed",
+        "unhelpful", "cracked", "worst", "disappointing", "frustrating", 
+        "useless", "broken", "expensive", "jams", "shorter", "stopped"
+    }
     
-    if is_correct:
-        st.success("""
-        **🎉 Excellent Recognition!**  
-        • The model correctly identified the digit  
-        • High confidence indicates clear input  
-        • The preprocessing worked effectively
-        """)
-    elif true_digit is not None:
-        st.error("""
-        **❌ Incorrect Recognition**  
-        • The model misclassified the digit  
-        • This could be due to:  
-          - Unclear drawing style  
-          - Preprocessing differences  
-          - Model confusion with similar digits
-        """)
-    elif confidence > 0.9:
-        st.success("""
-        **🎉 Excellent Recognition!**  
-        • The model is highly confident in this prediction  
-        • The digit appears clear and well-defined  
-        • Minimal ambiguity in classification
-        """)
-    elif confidence > 0.7:
-        st.warning("""
-        **👍 Good Recognition**  
-        • The model is confident in the prediction  
-        • Some minor ambiguity may exist  
-        • Consider redrawing for maximum accuracy
-        """)
-    elif confidence > 0.5:
-        st.info("""
-        **🤔 Moderate Confidence**  
-        • The model shows some uncertainty  
-        • Multiple digits had similar probabilities  
-        • Try drawing more clearly or using a different style
-        """)
+    text_low = text.lower()
+    words = text_low.split()
+    pos = sum(1 for word in words if word in positive_words)
+    neg = sum(1 for word in words if word in negative_words)
+    
+    total_words = pos + neg
+    if total_words > 0:
+        sentiment_score = (pos - neg) / total_words
     else:
-        st.error("""
-        **⚠️ Low Confidence**  
-        • The model is uncertain about this digit  
-        • Significant ambiguity in classification  
-        • The drawing may be unclear or ambiguous
-        """)
+        sentiment_score = 0
     
-    # Top 3 predictions
-    top_indices = np.argsort(probabilities)[-3:][::-1]
-    st.subheader("🏆 Top 3 Predictions")
+    if pos > neg:
+        return "Positive", pos, neg, sentiment_score
+    elif neg > pos:
+        return "Negative", pos, neg, sentiment_score
+    else:
+        return "Neutral", pos, neg, sentiment_score
+
+def extract_entities(text, nlp=None):
+    """Extract named entities from text"""
+    if nlp is None:
+        # Basic entity extraction without spaCy
+        entities = []
+        text_lower = text.lower()
+        
+        # Simple pattern matching for common entities
+        brands_products = {
+            'apple': ['iphone', 'ipad', 'macbook', 'apple'],
+            'samsung': ['samsung galaxy', 'samsung'],
+            'google': ['google pixel', 'google'],
+            'microsoft': ['microsoft surface', 'microsoft'],
+            'dell': ['dell xps', 'dell'],
+            'sony': ['sony headphones', 'sony'],
+            'hp': ['hp printer', 'hp'],
+            'lenovo': ['lenovo thinkpad', 'lenovo']
+        }
+        
+        for brand, products in brands_products.items():
+            for product in products:
+                if product in text_lower:
+                    entities.append((product.title(), 'PRODUCT'))
+                    entities.append((brand.title(), 'BRAND'))
+        
+        return list(set(entities))  # Remove duplicates
     
-    for i, idx in enumerate(top_indices):
-        emoji = "🥇" if i == 0 else "🥈" if i == 1 else "🥉"
-        prob = probabilities[idx]
-        is_true = (true_digit is not None and idx == true_digit)
-        highlight = "**" if is_true else ""
-        st.write(f"{emoji} {highlight}Digit {idx}: {prob:.3f} ({prob:.1%} confidence){highlight}")
+    else:
+        # Use spaCy for advanced NER
+        doc = nlp(text)
+        entities = [(ent.text, ent.label_) for ent in doc.ents]
+        return entities
+
+def display_text_analysis_results(reviews, nlp=None):
+    """Display comprehensive text analysis results"""
+    st.subheader("📊 Analysis Results")
+    
+    sentiment_counts = {'Positive': 0, 'Negative': 0, 'Neutral': 0}
+    all_entities = []
+    analysis_results = []
+    
+    for i, review in enumerate(reviews, 1):
+        # Sentiment analysis
+        sentiment, pos_count, neg_count, sentiment_score = analyze_sentiment(review)
+        sentiment_counts[sentiment] += 1
+        
+        # Entity extraction
+        entities = extract_entities(review, nlp)
+        all_entities.extend(entities)
+        
+        analysis_results.append({
+            'review_id': i,
+            'text': review,
+            'sentiment': sentiment,
+            'positive_words': pos_count,
+            'negative_words': neg_count,
+            'sentiment_score': sentiment_score,
+            'entities': entities
+        })
+    
+    # Display summary
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Total Reviews", len(reviews))
+    with col2:
+        st.metric("Positive", sentiment_counts['Positive'])
+    with col3:
+        st.metric("Negative", sentiment_counts['Negative'])
+    
+    # Visualization
+    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+    
+    # Sentiment distribution
+    axes[0].bar(sentiment_counts.keys(), sentiment_counts.values(), 
+                color=['#2ecc71', '#e74c3c', '#95a5a6'])
+    axes[0].set_title('Sentiment Distribution')
+    axes[0].set_ylabel('Number of Reviews')
+    
+    # Entity type distribution (if spaCy is available)
+    if nlp and all_entities:
+        entity_types = {}
+        for entity, etype in all_entities:
+            entity_types[etype] = entity_types.get(etype, 0) + 1
+        
+        if entity_types:
+            axes[1].bar(entity_types.keys(), entity_types.values(), color='#3498db')
+            axes[1].set_title('Entity Type Distribution')
+            axes[1].set_ylabel('Count')
+            plt.setp(axes[1].xaxis.get_majorticklabels(), rotation=45)
+    
+    plt.tight_layout()
+    st.pyplot(fig)
+    
+    # Detailed results
+    st.subheader("📝 Detailed Analysis")
+    for result in analysis_results:
+        with st.expander(f"Review {result['review_id']}: {result['sentiment']} Sentiment"):
+            st.write(f"**Text:** {result['text']}")
+            st.write(f"**Sentiment:** {result['sentiment']} (Score: {result['sentiment_score']:.2f})")
+            st.write(f"**Positive words:** {result['positive_words']}, **Negative words:** {result['negative_words']}")
+            if result['entities']:
+                st.write("**Extracted Entities:**")
+                for entity, etype in result['entities']:
+                    st.write(f"  - {entity} ({etype})")
+    
+    return analysis_results
+
+# =============================================================================
+# MAIN APPLICATION
+# =============================================================================
 
 def main():
-    # Initialize session state
-    initialize_session_state()
-    
     # Header
     st.markdown('<div class="main-header">🔢 Digital Vision AI</div>', unsafe_allow_html=True)
-    st.markdown("### Intelligent Handwritten Digit Recognition System")
+    st.markdown("### Complete Machine Learning Pipeline: Digit Recognition, Iris Classification & Text Analysis")
     
-    # Load model with fallback
-    model = load_digit_model()
-    if model is None:
-        st.sidebar.warning("⚠️ Trying fallback model...")
-        model = create_fallback_model()
-    
-    # Debug information
-    if model is None:
-        st.sidebar.error("🔧 Debug Info: All model loading failed")
-        # Add debug information about current directory
-        try:
-            st.sidebar.write("📁 Current directory:", os.getcwd())
-            if os.path.exists('models'):
-                st.sidebar.write("📁 Models directory contents:", os.listdir('models'))
-            else:
-                st.sidebar.write("❌ Models directory not found")
-        except Exception as e:
-            st.sidebar.write(f"❌ Debug error: {e}")
+    # Initialize models
+    digit_model = load_digit_model()
+    iris_model, iris_data = load_iris_model()
+    nlp_model = initialize_nlp()
     
     # Sidebar
     with st.sidebar:
-        st.header("🎯 System Information")
+        st.header("🎯 Navigation")
+        st.markdown("Choose a module to explore:")
         
-        if model:
+        # Module selection
+        selected_tab = st.radio(
+            "Select Module:",
+            ["Digit Recognition", "Iris Classification", "Text Analysis"],
+            index=0
+        )
+        
+        st.header("🔧 System Status")
+        status_col1, status_col2 = st.columns(2)
+        with status_col1:
+            st.metric("Digit Model", "✅" if digit_model else "❌")
+            st.metric("Iris Model", "✅" if iris_model else "❌")
+        with status_col2:
+            st.metric("NLP Engine", "✅" if nlp_model else "🔶")
+        
+        st.header("💡 Tips")
+        if selected_tab == "Digit Recognition":
             st.markdown("""
-            <div class="success-box">
-            <strong>✅ Model Status: Ready</strong><br>
-            • Accuracy: 98.2%<br>
-            • Training: 60,000 images<br>
-            • Architecture: CNN<br>
-            • Input: 28×28 grayscale<br>
-            • Output: Digit 0-9
-            </div>
-            """, unsafe_allow_html=True)
-        else:
+            - Draw clearly in the center
+            - Use thick strokes
+            - White on black works best
+            """)
+        elif selected_tab == "Iris Classification":
             st.markdown("""
-            <div class="warning-box">
-            <strong>⚠️ Model Status: Not Available</strong><br>
-            • Please run main.py first<br>
-            • Install TensorFlow if needed<br>
-            • Check model file exists
-            </div>
-            """, unsafe_allow_html=True)
-        
-        st.header("🛠️ How to Use")
-        st.markdown("""
-        1. **Draw** a digit in the canvas
-        2. **Click** 'Classify Drawing'
-        3. **View** real-time predictions
-        4. **Download** your drawing
-        5. **Upload** images for testing
-        """)
-        
-        st.header("💡 Drawing Tips for Better Accuracy")
-        st.markdown("""
-        - **Draw clearly** in the center
-        - **Use thick strokes** (20px recommended)
-        - **White on black** background
-        - **Fill most of the canvas**
-        - **Avoid blurry** or faint lines
-        - **Common confusions**:
-          - 3 vs 8, 5 vs 6, 7 vs 1
-        """)
-        
-        # Quick actions
-        st.header("⚡ Quick Actions")
-        if st.button("🔄 Reset All", use_container_width=True):
-            for key in list(st.session_state.keys()):
-                if key != 'model':  # Don't clear the cached model
-                    del st.session_state[key]
-            st.rerun()
-
-    # Main content area - Split into two columns for input and results
-    col1, col2 = st.columns([1, 1])
+            - Enter measurements in cm
+            - All features are required
+            - Model accuracy: ~95%
+            """)
+        elif selected_tab == "Text Analysis":
+            st.markdown("""
+            - Enter product reviews
+            - Sentiment analysis included
+            - Entity extraction for brands/products
+            """)
     
-    # LEFT COLUMN: Input Methods
-    with col1:
-        st.markdown('<div class="sub-header input-section">🎨 Input Methods</div>', unsafe_allow_html=True)
+    # Main content based on selected tab
+    if selected_tab == "Digit Recognition":
+        st.markdown('<div class="sub-header">✏️ Handwritten Digit Recognition</div>', unsafe_allow_html=True)
         
-        # Tab interface for different input methods
-        tab1, tab2, tab3 = st.tabs(["✏️ Draw Digit", "📤 Upload Image", "🎲 Sample Digits"])
+        if digit_model is None:
+            st.error("""
+            ❌ Digit recognition model not available. Please:
+            1. Run `main.py` first to train the model
+            2. Ensure TensorFlow is installed
+            3. Check that `models/digit_recognition_model.h5` exists
+            """)
+            return
         
-        with tab1:
-            st.markdown("#### Draw Your Digit")
-            st.markdown("**Tip**: Draw clearly in the center with thick strokes")
-            st.markdown('<div class="canvas-container">', unsafe_allow_html=True)
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.subheader("🎨 Input Methods")
             
+            # Drawing canvas
             try:
                 from streamlit_drawable_canvas import st_canvas
                 
-                # Canvas configuration
+                st.markdown("**Draw a digit (0-9):**")
                 canvas_result = st_canvas(
-                    fill_color="rgba(0, 0, 0, 1)",  # Black background
-                    stroke_width=20,  # Thick strokes for better recognition
-                    stroke_color="rgba(255, 255, 255, 1)",  # White drawing
-                    background_color="rgba(0, 0, 0, 1)",  # Black background
+                    fill_color="rgba(0, 0, 0, 1)",
+                    stroke_width=20,
+                    stroke_color="rgba(255, 255, 255, 1)",
+                    background_color="rgba(0, 0, 0, 1)",
                     height=300,
                     width=300,
                     drawing_mode="freedraw",
@@ -568,282 +537,192 @@ def main():
                     display_toolbar=True,
                 )
                 
-                st.markdown('</div>', unsafe_allow_html=True)
-                
-                # Canvas controls
                 col1a, col1b = st.columns(2)
                 with col1a:
-                    if st.button("🗑️ Clear Canvas", use_container_width=True, type="secondary"):
-                        clear_canvas()
+                    if st.button("🗑️ Clear Canvas", use_container_width=True):
                         st.rerun()
-                
                 with col1b:
                     classify_drawing = st.button("🔍 Classify Drawing", use_container_width=True, type="primary")
                 
-                # Process drawing when classify button is clicked
                 if classify_drawing and canvas_result and canvas_result.image_data is not None:
-                    try:
-                        # Convert canvas data to image
+                    with st.spinner("Analyzing your drawing..."):
                         canvas_image = Image.fromarray((canvas_result.image_data * 255).astype('uint8'))
+                        processed_image = preprocess_digit_image(canvas_image)
                         
-                        if model:
-                            with st.spinner("🔄 Analyzing your drawing..."):
-                                # Enhance the drawing
-                                enhanced_image = enhance_digit_image(canvas_image)
-                                processed_image = preprocess_digit_image(enhanced_image)
-                                if processed_image is not None:
-                                    prediction = model.predict(processed_image, verbose=0)
-                                    predicted_digit = np.argmax(prediction)
-                                    confidence = np.max(prediction)
-                                    
-                                    # Store results in session state
-                                    st.session_state.drawing_result = {
-                                        'predicted_digit': predicted_digit,
-                                        'confidence': confidence,
-                                        'probabilities': prediction[0],
-                                        'image': canvas_image,
-                                        'enhanced_image': enhanced_image
-                                    }
-                                    st.success("✅ Analysis complete! View results in the right panel.")
-                                else:
-                                    st.error("❌ Failed to process the drawing image")
-                        else:
-                            st.error("❌ Model not available for analysis")
-                        
-                    except Exception as e:
-                        st.error(f"❌ Error processing drawing: {e}")
-                        st.info("💡 Please ensure you've drawn a clear digit in the center of the canvas")
-                
-                # Save and download functionality
-                if canvas_result and canvas_result.image_data is not None:
-                    col1c, col1d = st.columns(2)
-                    with col1c:
-                        if st.button("💾 Save Drawing", use_container_width=True):
-                            drawing_img = Image.fromarray((canvas_result.image_data * 255).astype('uint8'))
-                            st.session_state.last_drawing = drawing_img
-                            st.success("✅ Drawing saved!")
-                    
-                    with col1d:
-                        if st.session_state.last_drawing is not None:
-                            st.markdown(get_image_download_link(
-                                st.session_state.last_drawing, 
-                                "my_digit.png", 
-                                "📥 Download Drawing"
-                            ), unsafe_allow_html=True)
-                
+                        if processed_image is not None:
+                            prediction = digit_model.predict(processed_image, verbose=0)
+                            predicted_digit = np.argmax(prediction)
+                            confidence = np.max(prediction)
+                            
+                            with col2:
+                                st.subheader("📊 Prediction Results")
+                                st.image(canvas_image, caption='Your Drawing', use_container_width=True)
+                                display_digit_prediction_results(predicted_digit, confidence, prediction[0])
+            
             except ImportError:
-                st.markdown('</div>', unsafe_allow_html=True)
-                st.error("❌ Drawing components not available")
-                st.info("💡 Install required package: `pip install streamlit-drawable-canvas`")
-                canvas_result = None
-                classify_drawing = False
-        
-        with tab2:
-            st.markdown("#### Upload Digit Image")
-            st.markdown("**Supported formats**: PNG, JPG, JPEG")
-            uploaded_file = st.file_uploader(
-                "Choose an image file containing a handwritten digit",
-                type=["png", "jpg", "jpeg"],
-                help="The image will be automatically processed and enhanced for better recognition."
-            )
+                st.error("Drawing components not available. Install: `pip install streamlit-drawable-canvas`")
+                
+            # File upload alternative
+            st.markdown("---")
+            st.subheader("📤 Upload Image")
+            uploaded_file = st.file_uploader("Or upload a digit image", type=["png", "jpg", "jpeg"])
             
             if uploaded_file is not None:
-                try:
-                    image = Image.open(uploaded_file)
-                    st.image(image, caption="📷 Uploaded Image", use_container_width=True)
-                    st.success("✅ Image uploaded successfully!")
+                image = Image.open(uploaded_file)
+                st.image(image, caption="Uploaded Image", use_container_width=True)
+                
+                if st.button("🔍 Analyze Uploaded Image", use_container_width=True):
+                    with st.spinner("Analyzing uploaded image..."):
+                        processed_image = preprocess_digit_image(image)
+                        if processed_image is not None:
+                            prediction = digit_model.predict(processed_image, verbose=0)
+                            predicted_digit = np.argmax(prediction)
+                            confidence = np.max(prediction)
+                            
+                            with col2:
+                                st.subheader("📊 Prediction Results")
+                                display_digit_prediction_results(predicted_digit, confidence, prediction[0])
+        
+        with col2:
+            if not (classify_drawing and canvas_result and canvas_result.image_data is not None) and not uploaded_file:
+                st.info("👆 Draw a digit or upload an image to see predictions here")
+                st.markdown("""
+                <div class="info-box">
+                <strong>About Digit Recognition:</strong><br><br>
+                • **Model**: Convolutional Neural Network (CNN)<br>
+                • **Training Data**: MNIST dataset (60,000 images)<br>
+                • **Accuracy**: >98% on test data<br>
+                • **Input**: 28×28 grayscale images<br>
+                • **Output**: Digit classification 0-9<br>
+                </div>
+                """, unsafe_allow_html=True)
+    
+    elif selected_tab == "Iris Classification":
+        st.markdown('<div class="sub-header">🌺 Iris Species Classification</div>', unsafe_allow_html=True)
+        
+        if iris_model is None or iris_data is None:
+            st.error("Iris classification model not available.")
+            return
+        
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            st.subheader("🔮 Species Prediction")
+            st.markdown("Enter iris flower measurements to predict the species:")
+            
+            # Input fields for features
+            sepal_length = st.number_input("Sepal Length (cm)", min_value=0.0, max_value=10.0, value=5.1, step=0.1)
+            sepal_width = st.number_input("Sepal Width (cm)", min_value=0.0, max_value=10.0, value=3.5, step=0.1)
+            petal_length = st.number_input("Petal Length (cm)", min_value=0.0, max_value=10.0, value=1.4, step=0.1)
+            petal_width = st.number_input("Petal Width (cm)", min_value=0.0, max_value=10.0, value=0.2, step=0.1)
+            
+            if st.button("🌺 Predict Species", type="primary", use_container_width=True):
+                features = [sepal_length, sepal_width, petal_length, petal_width]
+                species, confidence, probabilities = predict_iris_species(iris_model, iris_data, features)
+                
+                if species:
+                    st.success(f"**Predicted Species: {species}**")
+                    st.metric("Confidence", f"{confidence:.2%}")
                     
-                    # Auto-classify uploaded image
-                    if st.button("🔍 Analyze Uploaded Image", use_container_width=True, type="primary"):
-                        if model:
-                            with st.spinner("🔄 Analyzing uploaded image..."):
-                                # Enhance image first
-                                enhanced_image = enhance_digit_image(image)
-                                processed_image = preprocess_digit_image(enhanced_image)
-                                if processed_image is not None:
-                                    prediction = model.predict(processed_image, verbose=0)
-                                    predicted_digit = np.argmax(prediction)
-                                    confidence = np.max(prediction)
-                                    
-                                    # Store results
-                                    st.session_state.upload_result = {
-                                        'predicted_digit': predicted_digit,
-                                        'confidence': confidence,
-                                        'probabilities': prediction[0],
-                                        'image': enhanced_image
-                                    }
-                                    st.success("✅ Analysis complete! View results in the right panel.")
-                        else:
-                            st.error("❌ Model not available for analysis")
+                    # Display probabilities for all species
+                    st.subheader("📊 Prediction Probabilities")
+                    prob_df = pd.DataFrame({
+                        'Species': iris_data.target_names,
+                        'Probability': probabilities
+                    })
+                    st.dataframe(prob_df.style.format({'Probability': '{:.2%}'}))
                     
-                except Exception as e:
-                    st.error(f"❌ Error loading image: {e}")
+                    # Feature importance visualization
+                    st.subheader("🔍 Feature Importance")
+                    feature_importance = iris_model.feature_importances_
+                    fig, ax = plt.subplots(figsize=(10, 6))
+                    y_pos = np.arange(len(iris_data.feature_names))
+                    ax.barh(y_pos, feature_importance, color='steelblue', alpha=0.8)
+                    ax.set_yticks(y_pos)
+                    ax.set_yticklabels(iris_data.feature_names)
+                    ax.set_xlabel('Importance Score')
+                    ax.set_title('Feature Importance in Classification')
+                    ax.grid(axis='x', alpha=0.3)
+                    st.pyplot(fig)
         
-        with tab3:
-            st.markdown("#### Try Sample Digits")
-            st.markdown("Test the model with pre-generated digits")
-            
-            # Sample digit selection
-            sample_digit = st.selectbox(
-                "Select a digit to generate:",
-                options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-                index=3,
-                help="Choose a digit to generate a sample image"
-            )
-            
-            # Action buttons
-            col3a, col3b = st.columns(2)
-            
-            with col3a:
-                if st.button("🎯 Generate Sample", use_container_width=True):
-                    sample_image = create_handwritten_digit(sample_digit)
-                    if sample_image is not None:
-                        st.session_state.sample_image = sample_image
-                        st.session_state.sample_digit = sample_digit
-                        st.success(f"✅ Generated sample digit: {sample_digit}")
-                    else:
-                        st.error("❌ Failed to generate sample image")
-            
-            with col3b:
-                if st.button("🔍 Analyze Sample", use_container_width=True, type="primary"):
-                    if st.session_state.sample_image is not None and model:
-                        with st.spinner("🔄 Analyzing sample digit..."):
-                            try:
-                                processed_image = preprocess_digit_image(st.session_state.sample_image)
-                                if processed_image is not None:
-                                    prediction = model.predict(processed_image, verbose=0)
-                                    predicted_digit = np.argmax(prediction)
-                                    confidence = np.max(prediction)
-                                    
-                                    st.session_state.sample_result = {
-                                        'predicted_digit': predicted_digit,
-                                        'confidence': confidence,
-                                        'probabilities': prediction[0],
-                                        'image': st.session_state.sample_image,
-                                        'true_digit': st.session_state.sample_digit
-                                    }
-                                    st.success("✅ Sample analyzed successfully! View results in the right panel.")
-                                else:
-                                    st.error("❌ Failed to process sample image")
-                                
-                            except Exception as e:
-                                st.error(f"❌ Error analyzing sample: {e}")
-                    else:
-                        if st.session_state.sample_image is None:
-                            st.error("❌ Please generate a sample first")
-                        else:
-                            st.error("❌ Model not available for analysis")
-            
-            # Display generated sample
-            if st.session_state.sample_image is not None:
-                try:
-                    st.image(st.session_state.sample_image, 
-                            caption=f'🎲 Generated Sample: Digit {st.session_state.sample_digit}', 
-                            width=200)
-                    
-                    # Download sample
-                    if st.button("📥 Download Sample", use_container_width=True):
-                        st.markdown(get_image_download_link(
-                            st.session_state.sample_image,
-                            f"sample_digit_{st.session_state.sample_digit}.png",
-                            "📥 Download Sample Image"
-                        ), unsafe_allow_html=True)
-                except Exception as e:
-                    st.error(f"❌ Error displaying sample image: {e}")
-                    # Reset the problematic image
-                    st.session_state.sample_image = None
-
-    # RIGHT COLUMN: Prediction Results (directly opposite input methods)
-    with col2:
-        st.markdown('<div class="sub-header results-section">📊 Prediction Results</div>', unsafe_allow_html=True)
+        with col2:
+            st.subheader("📚 Dataset Analysis")
+            display_iris_analysis()
+    
+    elif selected_tab == "Text Analysis":
+        st.markdown('<div class="sub-header">📝 Text Analysis & Sentiment Detection</div>', unsafe_allow_html=True)
         
-        # Display drawing results
-        if st.session_state.drawing_result is not None and model:
-            result = st.session_state.drawing_result
-            if result['image'] is not None:
-                st.image(result['image'], caption='🎨 Your Drawing', use_container_width=True)
-                display_prediction_results(
-                    result['predicted_digit'], 
-                    result['confidence'], 
-                    result['probabilities'], 
-                    None,
-                    "drawing"
-                )
+        st.subheader("🔍 Analyze Product Reviews")
         
-        # Display uploaded file results
-        elif st.session_state.upload_result is not None and model:
-            result = st.session_state.upload_result
-            if result['image'] is not None:
-                st.image(result['image'], caption='📷 Uploaded Image', use_container_width=True)
-                display_prediction_results(
-                    result['predicted_digit'], 
-                    result['confidence'], 
-                    result['probabilities'], 
-                    None,
-                    "uploaded image"
-                )
+        # Input method selection
+        input_method = st.radio(
+            "Choose input method:",
+            ["Use Sample Reviews", "Enter Custom Text"],
+            horizontal=True
+        )
         
-        # Display sample results
-        elif st.session_state.sample_result is not None and model:
-            result = st.session_state.sample_result
-            if result['image'] is not None:
-                try:
-                    st.image(result['image'], 
-                            caption=f'🎲 Sample Digit: {result["true_digit"]}', 
-                            use_container_width=True)
-                    display_prediction_results(
-                        result['predicted_digit'], 
-                        result['confidence'], 
-                        result['probabilities'], 
-                        result['true_digit'],
-                        "sample digit"
-                    )
-                except Exception as e:
-                    st.error(f"❌ Error displaying sample result: {e}")
+        reviews = []
+        
+        if input_method == "Use Sample Reviews":
+            st.info("Using pre-loaded sample product reviews for analysis")
+            sample_reviews = [
+                "I absolutely love my new iPhone 14 Pro from Apple. The camera quality is amazing and battery life lasts all day!",
+                "This Samsung Galaxy S23 is terrible. The screen cracked after one week and customer service was unhelpful.",
+                "My Dell XPS laptop from Amazon works perfectly for programming and gaming. Highly recommended!",
+                "The Sony headphones I bought have poor sound quality and the build feels cheap. Very disappointed.",
+                "Google Pixel 7 has an incredible camera and clean Android experience. Best phone I've ever owned!"
+            ]
+            reviews = sample_reviews
+            
+            for i, review in enumerate(reviews, 1):
+                st.write(f"**Review {i}:** {review}")
         
         else:
-            st.info("👆 Choose an input method to get started")
+            st.text_area("Enter your text for analysis:", key="custom_text", height=150)
+            if st.session_state.custom_text:
+                reviews = [st.session_state.custom_text]
+            else:
+                st.warning("Please enter some text to analyze.")
+        
+        if reviews and st.button("🔍 Analyze Text", type="primary", use_container_width=True):
+            with st.spinner("Analyzing text..."):
+                analysis_results = display_text_analysis_results(reviews, nlp_model)
+        
+        # Additional NLP information
+        with st.expander("ℹ️ About Text Analysis"):
             st.markdown("""
-            <div class="info-box">
-            <strong>Ready to analyze handwritten digits:</strong><br><br>
-            • **Real-time drawing analysis** - Draw directly in the canvas<br>
-            • **Image upload processing** - Upload existing images<br>
-            • **Sample digit testing** - Generate and test sample digits<br>
-            • **Confidence scoring** - See how confident the model is<br>
-            • **Probability distribution** - View all possible predictions<br>
-            • **Download functionality** - Save your drawings<br>
-            </div>
-            """, unsafe_allow_html=True)
+            **Features Included:**
             
-            # Quick start guide
-            with st.expander("🚀 Quick Start Guide"):
-                st.markdown("""
-                **For Best Results:**
-                
-                **1. Drawing Tab:**
-                - Draw clearly in the center
-                - Use thick, white strokes on black background
-                - Make the digit fill most of the canvas
-                - Avoid faint or blurry lines
-                
-                **2. Upload Tab:**
-                - Use images with good contrast
-                - White digits on black background work best
-                - Clear, centered digits give best results
-                
-                **3. Sample Tab:**
-                - Test with pre-generated digits
-                - Verify model accuracy
-                - Use as reference for your drawings
-                """)
+            **1. Sentiment Analysis**
+            - Rule-based approach using positive/negative word dictionaries
+            - Calculates sentiment score (-1 to +1)
+            - Classifies as Positive, Negative, or Neutral
+            
+            **2. Named Entity Recognition (NER)**
+            - Extracts product names and brands
+            - Uses spaCy for advanced entity recognition
+            - Fallback to pattern matching if spaCy not available
+            
+            **3. Entity Types:**
+            - PRODUCT: Product names and models
+            - BRAND: Company and brand names
+            - ORG: Organizations
+            - PERSON: People names
+            - And more...
+            
+            **Technical Details:**
+            - Built with spaCy for advanced NLP
+            - Custom sentiment analysis rules
+            - Expandable entity recognition patterns
+            """)
 
-# Footer with project information
+# Footer
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center'>
-    <h3>🔍 Digital Vision AI - Interactive Digit Recognition</h3>
-    <p><strong>Technologies Used:</strong> TensorFlow • Streamlit • Computer Vision • Machine Learning</p>
-    <p><small>Includes: Real-time Drawing Analysis • Image Upload • Sample Testing • Confidence Scoring</small></p>
+    <h3>🔍 Digital Vision AI - Complete ML Pipeline</h3>
+    <p><strong>Modules:</strong> Digit Recognition • Iris Classification • Text Analysis</p>
+    <p><small>Built with: TensorFlow • Scikit-learn • spaCy • Streamlit</small></p>
 </div>
 """, unsafe_allow_html=True)
 

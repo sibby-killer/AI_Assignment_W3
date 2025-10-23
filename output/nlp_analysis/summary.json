@@ -15,5 +15,6 @@
   "word_frequency": {
     "positive_words": 10,
     "negative_words": 6
-  }
+  },
+  "nlp_engine": "spaCy"
 }
