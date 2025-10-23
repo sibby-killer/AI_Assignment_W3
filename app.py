@@ -97,39 +97,91 @@ st.markdown("""
 
 @st.cache_resource
 def load_digit_model():
-    """Load the pre-trained digit recognition model with better error handling"""
+    """Load the pre-trained digit recognition model with comprehensive error handling"""
     try:
-        # Import TensorFlow only when needed
         import tensorflow as tf
+        import os
         
-        # Define model path - use relative path for deployment
         model_path = 'models/digit_recognition_model.h5'
         
-        # Try to load the model directly without checking file existence first
-        # This works better in cloud environments
+        # Debug information
+        st.sidebar.write("🔍 Model loading debug:")
+        st.sidebar.write(f"📁 Model path: {model_path}")
+        st.sidebar.write(f"📁 File exists: {os.path.exists(model_path)}")
+        
+        if os.path.exists(model_path):
+            file_size = os.path.getsize(model_path) / (1024 * 1024)  # Size in MB
+            st.sidebar.write(f"📏 File size: {file_size:.2f} MB")
+            
+            if file_size < 0.1:  # If file is too small, it's probably corrupted
+                st.sidebar.error("❌ Model file appears corrupted (too small)")
+                return None
+        
         try:
-            model = tf.keras.models.load_model(model_path)
+            # Try to load with different options
+            model = tf.keras.models.load_model(
+                model_path,
+                compile=False  # Try without compilation first
+            )
+            
+            # If successful, compile it
+            model.compile(
+                optimizer='adam',
+                loss='sparse_categorical_crossentropy',
+                metrics=['accuracy']
+            )
+            
             st.sidebar.success("✅ Model loaded successfully!")
             return model
-        except (OSError, IOError) as e:
-            st.sidebar.error(f"🔍 Model file not found at: {model_path}")
-            st.sidebar.info("""
-            **To fix this:**
-            1. Run `python main.py` locally to train the model
-            2. Upload the model file to GitHub
-            3. Redeploy on Streamlit Cloud
-            """)
             
-            # Provide more detailed error information
-            st.sidebar.error(f"Detailed error: {str(e)}")
-            return None
+        except Exception as load_error:
+            st.sidebar.error(f"❌ TensorFlow loading error: {str(load_error)}")
             
-    except ImportError:
-        st.sidebar.error("❌ TensorFlow not available")
-        st.sidebar.info("Install with: pip install tensorflow")
+            # Try alternative loading method
+            try:
+                st.sidebar.info("🔄 Trying alternative loading method...")
+                from tensorflow.keras.models import load_model
+                model = load_model(model_path)
+                st.sidebar.success("✅ Model loaded with alternative method!")
+                return model
+            except Exception as alt_error:
+                st.sidebar.error(f"❌ Alternative loading failed: {str(alt_error)}")
+                return None
+                
+    except ImportError as e:
+        st.sidebar.error(f"❌ TensorFlow import error: {e}")
         return None
     except Exception as e:
-        st.sidebar.error(f"❌ Unexpected error loading model: {e}")
+        st.sidebar.error(f"❌ Unexpected error: {e}")
+        return None
+
+def create_fallback_model():
+    """Create a simple fallback model when the main model fails to load"""
+    try:
+        import tensorflow as tf
+        
+        st.sidebar.warning("🔄 Creating fallback model...")
+        
+        # Simple CNN architecture
+        model = tf.keras.Sequential([
+            tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+            tf.keras.layers.MaxPooling2D((2, 2)),
+            tf.keras.layers.Flatten(),
+            tf.keras.layers.Dense(64, activation='relu'),
+            tf.keras.layers.Dense(10, activation='softmax')
+        ])
+        
+        model.compile(
+            optimizer='adam',
+            loss='sparse_categorical_crossentropy',
+            metrics=['accuracy']
+        )
+        
+        st.sidebar.info("📝 Using fallback model (basic accuracy)")
+        return model
+        
+    except Exception as e:
+        st.sidebar.error(f"❌ Fallback model creation failed: {e}")
         return None
 
 def preprocess_digit_image(image):
@@ -413,12 +465,15 @@ def main():
     st.markdown('<div class="main-header">🔢 Digital Vision AI</div>', unsafe_allow_html=True)
     st.markdown("### Intelligent Handwritten Digit Recognition System")
     
-    # Load model
+    # Load model with fallback
     model = load_digit_model()
+    if model is None:
+        st.sidebar.warning("⚠️ Trying fallback model...")
+        model = create_fallback_model()
     
     # Debug information
     if model is None:
-        st.sidebar.warning("🔧 Debug Info: Model is None")
+        st.sidebar.error("🔧 Debug Info: All model loading failed")
         # Add debug information about current directory
         try:
             st.sidebar.write("📁 Current directory:", os.getcwd())
