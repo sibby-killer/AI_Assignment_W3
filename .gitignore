@@ -1,0 +1,73 @@
+# ------------------------------
+# Python cache and build files
+# ------------------------------
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+build/
+dist/
+.eggs/
+
+# ------------------------------
+# Virtual environment
+# ------------------------------
+ai_assignment_w3_env/
+env/
+venv/
+.venv/
+
+# ------------------------------
+# Jupyter / Streamlit
+# ------------------------------
+.ipynb_checkpoints/
+.streamlit/secrets.toml
+
+# ------------------------------
+# Data, models, outputs
+# ------------------------------
+models/
+output/
+screenshots/
+
+# ------------------------------
+# System / IDE files
+# ------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# ------------------------------
+# Logs and temp files
+# ------------------------------
+*.log
+*.tmp
+*.swp
+*.bak
+
+# ------------------------------
+# Environment and credentials
+# ------------------------------
+.env
+*.env
+.env.*
+secrets.json
+credentials.json
+
+# ------------------------------
+# TensorFlow / PyTorch checkpoints
+# ------------------------------
+checkpoints/
+*.ckpt
+*.h5
+*.tflite
+*.pb
+*.pth
+*.pt
+
+# ------------------------------
+# OS-specific
+# ------------------------------
+desktop.ini
