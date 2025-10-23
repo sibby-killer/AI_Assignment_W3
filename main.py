@@ -416,8 +416,16 @@ def digit_recognition():
         plt.show()
         
         # Save trained model
-        model.save('models/digit_recognition_model.h5')
-        print("💾 Model saved to: models/digit_recognition_model.h5")
+        model_path = 'models/digit_recognition_model.h5'
+        model.save(model_path)
+        print(f"💾 Model saved to: {model_path}")
+        
+        # Verify model file was created
+        if os.path.exists(model_path):
+            file_size = os.path.getsize(model_path) / (1024 * 1024)  # Size in MB
+            print(f"✅ Model file verified: {file_size:.2f} MB")
+        else:
+            print("❌ Model file was not created successfully")
         
         # Enhanced training history with per-digit metrics
         history_data = {

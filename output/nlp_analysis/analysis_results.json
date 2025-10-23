@@ -111,8 +111,8 @@
       ]
     ],
     "products": [
-      "HP printer",
-      "HP"
+      "HP",
+      "HP printer"
     ],
     "sentiment": "Negative",
     "positive_words": 0,
@@ -129,8 +129,8 @@
       ]
     ],
     "products": [
-      "Microsoft Surface",
-      "Microsoft"
+      "Microsoft",
+      "Microsoft Surface"
     ],
     "sentiment": "Positive",
     "positive_words": 1,
@@ -151,8 +151,8 @@
       ]
     ],
     "products": [
-      "Lenovo",
-      "Lenovo ThinkPad"
+      "Lenovo ThinkPad",
+      "Lenovo"
     ],
     "sentiment": "Neutral",
     "positive_words": 1,

@@ -97,24 +97,39 @@ st.markdown("""
 
 @st.cache_resource
 def load_digit_model():
-    """Load the pre-trained digit recognition model"""
+    """Load the pre-trained digit recognition model with better error handling"""
     try:
         # Import TensorFlow only when needed
         import tensorflow as tf
+        
+        # Define model path - use relative path for deployment
         model_path = 'models/digit_recognition_model.h5'
-        if os.path.exists(model_path):
+        
+        # Try to load the model directly without checking file existence first
+        # This works better in cloud environments
+        try:
             model = tf.keras.models.load_model(model_path)
+            st.sidebar.success("✅ Model loaded successfully!")
             return model
-        else:
-            st.sidebar.error("🔍 Model file not found.")
-            st.sidebar.info("Please run main.py first to train the model.")
+        except (OSError, IOError) as e:
+            st.sidebar.error(f"🔍 Model file not found at: {model_path}")
+            st.sidebar.info("""
+            **To fix this:**
+            1. Run `python main.py` locally to train the model
+            2. Upload the model file to GitHub
+            3. Redeploy on Streamlit Cloud
+            """)
+            
+            # Provide more detailed error information
+            st.sidebar.error(f"Detailed error: {str(e)}")
             return None
+            
     except ImportError:
         st.sidebar.error("❌ TensorFlow not available")
         st.sidebar.info("Install with: pip install tensorflow")
         return None
     except Exception as e:
-        st.sidebar.error(f"❌ Error loading model: {e}")
+        st.sidebar.error(f"❌ Unexpected error loading model: {e}")
         return None
 
 def preprocess_digit_image(image):
@@ -400,6 +415,19 @@ def main():
     
     # Load model
     model = load_digit_model()
+    
+    # Debug information
+    if model is None:
+        st.sidebar.warning("🔧 Debug Info: Model is None")
+        # Add debug information about current directory
+        try:
+            st.sidebar.write("📁 Current directory:", os.getcwd())
+            if os.path.exists('models'):
+                st.sidebar.write("📁 Models directory contents:", os.listdir('models'))
+            else:
+                st.sidebar.write("❌ Models directory not found")
+        except Exception as e:
+            st.sidebar.write(f"❌ Debug error: {e}")
     
     # Sidebar
     with st.sidebar:

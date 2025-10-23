@@ -25,30 +25,35 @@ python -m spacy download en_core_web_sm
 Method 1: Using venv – ✅ Recommended
 bash
 python -m venv ai_assignment_w3_env
-# Activate
+### Activate
 ai_assignment_w3_env\Scripts\activate  # Windows
 source ai_assignment_w3_env/bin/activate  # Mac/Linux
 
-# Install dependencies
+### Install dependencies
 pip install -r requirements.txt
+1. You can also automatically generate a requirements.txt file that only includes the packages your code actually uses using pipreqs
+  pip install pipreqs   # Install pipreqs
+  pipreqs . --encoding utf-8 --force  # Generate the requirements 
 
-# Optional: CPU-only TensorFlow
+                                                              
+2. Optional: CPU-only TensorFlow
 pip install tensorflow-cpu
 
-# Download spaCy model
+3. Download spaCy model
 python -m spacy download en_core_web_sm
 
-# Install Streamlit canvas
+4. Install Streamlit canvas
 pip install streamlit-drawable-canvas
 
-# Run training
+5. Run training
 python main.py
 
-# Launch app
+6. Launch app
 streamlit run app.py
 
-# Deactivate
+7. Deactivate
 deactivate
+
 Method 2: Using conda
 bash
 conda create -n ai_assignment_w3 python=3.9
@@ -67,13 +72,13 @@ bash
 python main.py
 This will:
 
-Train the iris classification model
+ - Train the iris classification model
 
-Train the digit recognition CNN
+ - Train the digit recognition CNN
 
-Perform text analysis
+ - Perform text analysis
 
-Generate visualizations in the output/ directory
+ - Generate visualizations in the output/ directory
 
 2. Launch the Interactive Web Application
 bash
@@ -84,64 +89,64 @@ The app will open in your default browser at http://localhost:8501
 1. Handwritten Digit Recognition
 Architecture: CNN
 
-Layers: 5 convolutional, 3 dense layers with dropout
+ - Layers: 5 convolutional, 3 dense layers with dropout
 
-Accuracy: >98% on MNIST test set
+ - Accuracy: >98% on MNIST test set
 
-Features: Batch normalization, data augmentation
+ - Features: Batch normalization, data augmentation
 
 2. Iris Classification
-Algorithm: Decision Tree Classifier
+ - Algorithm: Decision Tree Classifier
 
-Features: Sepal length, sepal width, petal length, petal width
+ - Features: Sepal length, sepal width, petal length, petal width
 
-Classes: Setosa, Versicolor, Virginica
+ - Classes: Setosa, Versicolor, Virginica
 
-Accuracy: >95%
+ - Accuracy: >95%
 
 3. Text Analysis
-Sentiment Analysis: Custom lexicon-based approach
+ - Sentiment Analysis: Custom lexicon-based approach
 
-NER: spaCy for entity recognition
+ - NER: spaCy for entity recognition
 
-Pattern Matching: Phrase matcher for product detection
+ - Pattern Matching: Phrase matcher for product detection
 
 ## 🎯 Web Application Features
-✏️ Drawing Interface
-Interactive canvas for digit drawing
+1. ✏️ Drawing Interface
+ - Interactive canvas for digit drawing
 
-Real-time classification
+ - Real-time classification
 
-Confidence scores and probability distributions
+ - Confidence scores and probability distributions
 
-Download drawings as PNG files
+ - Download drawings as PNG files
 
-📤 Image Upload
-Supports PNG, JPG, JPEG
+2. 📤 Image Upload
+ - Supports PNG, JPG, JPEG
 
-Automatic preprocessing and enhancement
+ - Automatic preprocessing and enhancement
 
-Batch processing capabilities
+ - Batch processing capabilities
 
-🎲 Sample Testing
-Pre-generated digit samples
+3. 🎲 Sample Testing
+ - Pre-generated digit samples
 
-Model accuracy verification
+ - Model accuracy verification
 
-Performance benchmarking
+ - Performance benchmarking
 
-## 📊 Output and Analysis
-Model performance metrics (accuracy, precision, recall)
+4. 📊 Output and Analysis
+ - Model performance metrics (accuracy, precision, recall)
 
-Training history visualizations
+ - Training history visualizations
 
-Confusion matrices
+ - Confusion matrices
 
-Feature importance charts
+ - Feature importance charts
 
-Sentiment analysis reports
+ - Sentiment analysis reports
 
-Entity recognition results
+ - Entity recognition results
 
 ## 🛠️ Technical Details
 Dependencies
@@ -156,92 +161,90 @@ numpy>=1.24.0
 spacy>=3.7.0
 streamlit-drawable-canvas>=0.9.0
 Pillow>=10.0.0
-## Model Performance
-Model	Accuracy	Precision	Recall	Training Time
-Digit Recognition	98.2%	98.1%	98.0%	~5 minutes
-Iris Classification	96.7%	96.5%	96.7%	<1 second
-Text Analysis	-	-	-	<1 second
+
+## 📊 Model Performance
+
+| Model               | Accuracy | Precision | Recall | Training Time |
+|----------------------|-----------|------------|---------|----------------|
+| Digit Recognition    | 98.2%     | 98.1%      | 98.0%   | ~5 minutes     |
+| Iris Classification  | 96.7%     | 96.5%      | 96.7%   | <1 second      |
+| Text Analysis        | -         | -          | -       | <1 second      |
+
+
 ## 🎮 How to Use the Web App
-Drawing Tab ✏️
-Draw a digit (0–9) in the canvas
+1. Drawing Tab ✏️
+ - Draw a digit (0–9) in the canvas
 
-Click Classify Drawing
+ - Click Classify Drawing
 
-View predictions and confidence scores
+ - View predictions and confidence scores
 
-Upload Tab 📤
-Upload a digit image
+2. Upload Tab 📤
+ - Upload a digit image
 
-Click Analyze Uploaded Image
+ - Click Analyze Uploaded Image
 
-View classification results
+ - View classification results
 
-Sample Tab 🎲
-Generate sample digits
+3. Sample Tab 🎲
+ - Generate sample digits
 
-Test model accuracy
+ - Test model accuracy
 
-Download sample images
+ - Download sample images
 
-🔧 Customization
-Adding New Models
-Add training code to main.py
-
-Update UI in app.py
-
-Add visualization functions
-
-Modifying Text Analysis
-Update reviews in text_analysis()
-
-Modify sentiment lexicons
-
-Add new entity patterns
-
-Styling Changes
-Modify CSS in st.markdown()
-
-Update color schemes and layout
-
-Add custom Streamlit components
+## 🔧 Customization
+ - Adding New Models
+ - Add training code to main.py
+ - Update UI in app.py
+ - Add visualization functions
+ - Modifying Text Analysis
+ - Update reviews in text_analysis()
+ - Modify sentiment lexicons
+ - Add new entity patterns
+ - styling Changes 
+   - *Modify CSS in st.markdown()*
+ - Update color schemes and layout
+ - Add custom Streamlit components
 
 ## 🐛 Troubleshooting
-Common Issues
-TensorFlow not installing
 
-bash
+### **Common Issues**
+
+#### ⚙️ TensorFlow Not Installing
+```bash
 pip install tensorflow-cpu
-spaCy model not found
 
-bash
+###  🧠 spaCy Model Not Found
 python -m spacy download en_core_web_sm
-Streamlit canvas not working
 
-bash
+### 🎨 Streamlit Canvas Not Working
 pip install streamlit-drawable-canvas
-Out of memory during training
 
-Reduce batch size
+### 💾 Out of Memory During Training
 
-Use smaller architecture
+ - Reduce batch size
 
-Enable GPU memory growth
+ - Use smaller architecture
 
-Performance Tips
-Use GPU (tensorflow-gpu)
+ - Enable GPU memory growth
 
-Reduce image size
+### ⚡ Performance Tips
 
-Use smaller batches
+- Use GPU (tensorflow-gpu)
 
-Enable early stopping
+- Reduce image size
+
+- Use smaller batches
+
+- Enable early stopping
 
 ### 📈 Results and Demos
-🧮 Real-time digit classification
+ - 🧮 Real-time digit classification
 
-📊 Model accuracy and loss graphs
+ - 📊 Model accuracy and loss graphs
 
-💬 Sentiment distribution from product reviews
+ - 💬 Sentiment distribution from product reviews
 
 ## 🤝 Contributing
 We welcome contributions!
@@ -260,12 +263,15 @@ Then, open a Pull Request 🚀
 ## 📝 License
 This project is licensed under the MIT License — see the LICENSE file for details.
 
+
 ## 👥 Team
-Name	Role	Email
-Christine Mirimba	Machine Learning Engineer	mirimbachristine@gmail.com
-Alfred Nyongesa	Data Analyst & System Optimization	alfred.dev8@gmail.com
-Hannah Shekinah	AI Ethics & Sustainability Specialist	hannahshekinah@gmail.com
-Joelina Quarshie	Technical Writer & Research Coordinator	joelinakq@gmail.com
+
+| Name               | Role                                   | Email |
+|--------------------|----------------------------------------|--------|
+| **Christine Mirimba** | Machine Learning Engineer              | [mirimbachristine@gmail.com](mailto:mirimbachristine@gmail.com) |
+| **Alfred Nyongesa**  | Data Analyst & System Optimization     | [alfred.dev8@gmail.com](mailto:alfred.dev8@gmail.com) |
+| **Hannah Shekinah**  | AI Ethics & Sustainability Specialist  | [hannahshekinah@gmail.com](mailto:hannahshekinah@gmail.com) |
+| **Joelina Quarshie** | Technical Writer & Research Coordinator | [joelinakq@gmail.com](mailto:joelinakq@gmail.com) |
 
 ## 👩‍💻 Author
 Christine Mirimba Machine Learning Engineer • Full-stack Developer • UX Designer
