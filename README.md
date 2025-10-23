@@ -1,6 +1,8 @@
 # 🌐 Digital Vision AI
 A Complete Machine Learning & Deep Learning Application
 
+🔗 [Live Demo](https://digit-predict-ai.streamlit.app/)  
+
 This project integrates Classical Machine Learning, Deep Learning, and Natural Language Processing into one interactive platform powered by Streamlit. Each task demonstrates an essential aspect of applied AI — classification, computer vision, and text understanding — deployed together with a clean tabbed navigation UI.
 
 ## 🧠 Project Overview
@@ -49,101 +51,101 @@ AI_Assignment_W3/
 │ ├── digit_recognition/
 │ └── nlp_analysis/
 
-## ⚙️ Installation
+## Installation
 
-### 🧩 Method 1: Using `venv` – ✅ *Recommended*
+ ### 🧩 Method 1: Using `venv` – ✅ *Recommended*
 
-```bash
-# Clone the repository
-git clone https://github.com/christinemirimba/AI_Assignment_W3.git
-cd AI_Assignment_W3
+ ```bash
+ # Clone the repository
+ git clone https://github.com/christinemirimba/AI_Assignment_W3.git
+ cd AI_Assignment_W3
 
-# Create virtual environment
-python -m venv ai_assignment_w3_env
+ # Create virtual environment
+ python -m venv ai_assignment_w3_env
 
-# Activate environment
-# Windows:
-ai_assignment_w3_env\Scripts\activate
-# Mac/Linux:
-source ai_assignment_w3_env/bin/activate
+ # Activate environment
+ # Windows:
+ ai_assignment_w3_env\Scripts\activate
+ # Mac/Linux:
+ source ai_assignment_w3_env/bin/activate
 
-# Install dependencies
-pip install -r requirements.txt
+ # Install dependencies
+ pip install -r requirements.txt
+ 
+ # Download spaCy English model
+ python -m spacy download en_core_web_sm
 
-# Download spaCy English model
-python -m spacy download en_core_web_sm
+ # Install additional components
+ pip install streamlit-drawable-canvas joblib
 
-# Install additional components
-pip install streamlit-drawable-canvas joblib
-
-# Run training pipeline
+ # Run training pipeline
 python main.py
 
-# Launch the application
+ # Launch the application
 streamlit run app.py
 
-# Deactivate environment when done
-deactivate
-🧬 Method 2: Using Conda
-# Create conda environment
-conda create -n ai_assignment_w3 python=3.9
-conda activate ai_assignment_w3
+ # Deactivate environment when done
+ deactivate
+ 🧬 Method 2: Using Conda
+ # Create conda environment
+ conda create -n ai_assignment_w3 python=3.9
+ conda activate ai_assignment_w3
 
-# Install packages
-pip install tensorflow scikit-learn spacy matplotlib seaborn pandas numpy streamlit pillow streamlit-drawable-canvas joblib
+ # Install packages
+ pip install tensorflow scikit-learn spacy matplotlib seaborn pandas numpy streamlit pillow streamlit-drawable-canvas joblib
 
-# Download spaCy model
-python -m spacy download en_core_web_sm
+ # Download spaCy model
+ python -m spacy download en_core_web_sm
 
-# Run training and launch app
-python main.py
-streamlit run app.py
+ # Run training and launch app
+ python main.py
+ streamlit run app.py
 
-# Deactivate environment
-conda deactivate
+ # Deactivate environment
+ conda deactivate
 
-⚡ Method 3: Quick Setup with pipreqs
-# Generate requirements from actual code usage
-pip install pipreqs
-pipreqs . --encoding utf-8 --force
+ ⚡ Method 3: Quick Setup with pipreqs
+ # Generate requirements from actual code usage
+ pip install pipreqs
+ pipreqs . --encoding utf-8 --force
 
-# Install generated requirements
-pip install -r requirements.txt
+ # Install generated requirements
+ pip install -r requirements.txt
 
-# Optional: CPU-only TensorFlow (if GPU not available)
-pip install tensorflow-cpu
+ # Optional: CPU-only TensorFlow (if GPU not available)
+ pip install tensorflow-cpu
 
-## 🚀 Usage
+ ## 🚀 Usage
 
-1. Train All Machine Learning Models
+ 1. Train All Machine Learning Models
 
-```bash
-python main.py
+ ```bash
+ python main.py
 
-This comprehensive training pipeline will:
+ This comprehensive training pipeline will:
 
-Iris Classification: Train Decision Tree classifier and save model to models/iris_model.pkl
+ - Iris Classification: Train Decision Tree classifier and save model to models/iris_model.pkl
 
-Digit Recognition: Train CNN model with data augmentation and save to models/digit_recognition_model.h5
+ - Digit Recognition: Train CNN model with data augmentation and save to models/digit_recognition_model.h5
 
-Text Analysis: Perform NLP analysis on product reviews
+ - Text Analysis: Perform NLP analysis on product reviews
 
-Generate Visualizations: Create comprehensive analysis in output/ directory including:
+ - Generate Visualizations: Create comprehensive analysis in output/ directory including:
+ 
+ - Feature importance charts
 
-Feature importance charts
+ - Confusion matrices
 
-Confusion matrices
+ - Training history plots
 
-Training history plots
+ - Sentiment analysis results
 
-Sentiment analysis results
+ - Entity recognition visualizations
 
-Entity recognition visualizations
-
-2. Launch Interactive Web Application
-bash
-streamlit run app.py
-The application will open in your default browser at http://localhost:8501
+ 2. Launch Interactive Web Application
+ bash
+ streamlit run app.py
+ The application will open in your default browser at http://localhost:8501
 
 ## 🧠 Machine Learning Models
 
