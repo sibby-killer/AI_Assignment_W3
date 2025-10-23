@@ -1,0 +1,19 @@
+{
+  "total_reviews": 10,
+  "total_entities": 15,
+  "sentiment_distribution": {
+    "Positive": 5,
+    "Negative": 4,
+    "Neutral": 1
+  },
+  "entity_types": {
+    "CARDINAL": 1,
+    "ORG": 10,
+    "DATE": 3,
+    "PRODUCT": 1
+  },
+  "word_frequency": {
+    "positive_words": 10,
+    "negative_words": 6
+  }
+}

@@ -1,0 +1,200 @@
+[
+  {
+    "review_id": 1,
+    "review_text": "I absolutely love my new iPhone 14 Pro from Apple. The camera quality is amazing and battery life lasts all day!",
+    "entities": [
+      [
+        "14",
+        "CARDINAL"
+      ],
+      [
+        "Apple",
+        "ORG"
+      ],
+      [
+        "all day",
+        "DATE"
+      ]
+    ],
+    "products": [
+      "Apple",
+      "iPhone"
+    ],
+    "sentiment": "Positive",
+    "positive_words": 2,
+    "negative_words": 0,
+    "sentiment_score": 1.0
+  },
+  {
+    "review_id": 2,
+    "review_text": "This Samsung Galaxy S23 is terrible. The screen cracked after one week and customer service was unhelpful.",
+    "entities": [
+      [
+        "S23",
+        "ORG"
+      ],
+      [
+        "one week",
+        "DATE"
+      ]
+    ],
+    "products": [
+      "Samsung",
+      "Samsung Galaxy"
+    ],
+    "sentiment": "Negative",
+    "positive_words": 0,
+    "negative_words": 1,
+    "sentiment_score": -1.0
+  },
+  {
+    "review_id": 3,
+    "review_text": "My Dell XPS laptop from Amazon works perfectly for programming and gaming. Highly recommended!",
+    "entities": [
+      [
+        "Amazon",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "Dell",
+      "Dell XPS"
+    ],
+    "sentiment": "Positive",
+    "positive_words": 2,
+    "negative_words": 0,
+    "sentiment_score": 1.0
+  },
+  {
+    "review_id": 4,
+    "review_text": "The Sony headphones I bought have poor sound quality and the build feels cheap. Very disappointed.",
+    "entities": [
+      [
+        "Sony",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "Sony",
+      "Sony headphones"
+    ],
+    "sentiment": "Negative",
+    "positive_words": 0,
+    "negative_words": 1,
+    "sentiment_score": -1.0
+  },
+  {
+    "review_id": 5,
+    "review_text": "Google Pixel 7 has an incredible camera and clean Android experience. Best phone I've ever owned!",
+    "entities": [
+      [
+        "Android",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "Google Pixel",
+      "Google"
+    ],
+    "sentiment": "Positive",
+    "positive_words": 2,
+    "negative_words": 0,
+    "sentiment_score": 1.0
+  },
+  {
+    "review_id": 6,
+    "review_text": "This HP printer constantly jams and the ink is too expensive. Would not buy again.",
+    "entities": [
+      [
+        "HP",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "HP printer",
+      "HP"
+    ],
+    "sentiment": "Negative",
+    "positive_words": 0,
+    "negative_words": 1,
+    "sentiment_score": -1.0
+  },
+  {
+    "review_id": 7,
+    "review_text": "Microsoft Surface Pro is fantastic for work and travel. The pen input is very responsive.",
+    "entities": [
+      [
+        "Microsoft Surface Pro",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "Microsoft Surface",
+      "Microsoft"
+    ],
+    "sentiment": "Positive",
+    "positive_words": 1,
+    "negative_words": 0,
+    "sentiment_score": 1.0
+  },
+  {
+    "review_id": 8,
+    "review_text": "The Lenovo ThinkPad keyboard is comfortable but the battery life is shorter than expected.",
+    "entities": [
+      [
+        "Lenovo",
+        "ORG"
+      ],
+      [
+        "ThinkPad",
+        "PRODUCT"
+      ]
+    ],
+    "products": [
+      "Lenovo",
+      "Lenovo ThinkPad"
+    ],
+    "sentiment": "Neutral",
+    "positive_words": 1,
+    "negative_words": 1,
+    "sentiment_score": 0.0
+  },
+  {
+    "review_id": 9,
+    "review_text": "Amazing product from Apple! The build quality is exceptional and performance is outstanding.",
+    "entities": [
+      [
+        "Apple",
+        "ORG"
+      ]
+    ],
+    "products": [
+      "Apple"
+    ],
+    "sentiment": "Positive",
+    "positive_words": 2,
+    "negative_words": 0,
+    "sentiment_score": 1.0
+  },
+  {
+    "review_id": 10,
+    "review_text": "Poor customer service from Samsung. The device stopped working after 2 months.",
+    "entities": [
+      [
+        "Samsung",
+        "ORG"
+      ],
+      [
+        "2 months",
+        "DATE"
+      ]
+    ],
+    "products": [
+      "Samsung"
+    ],
+    "sentiment": "Negative",
+    "positive_words": 0,
+    "negative_words": 2,
+    "sentiment_score": -1.0
+  }
+]
