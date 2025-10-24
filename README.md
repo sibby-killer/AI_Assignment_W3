@@ -47,9 +47,12 @@ This project integrates Classical Machine Learning, Deep Learning, and Natural L
 - │ └── nlp_analysis/
 
 ---
+
+---
+
 ## 🛠️ Installation
 
-1. Using `venv` – ✅ *Recommended* **
+### 1. Using `venv` – ✅ *Recommended*
 
 ```bash
 # Clone the repository
@@ -82,11 +85,15 @@ streamlit run app.py
 
 # Deactivate environment when done
 deactivate
+```
+
 2. Using Conda
-bash
+```bash
+
 # Create conda environment
 conda create -n ai_assignment_w3 python=3.9
 conda activate ai_assignment_w3
+```
 
 # Install packages
 pip install tensorflow scikit-learn spacy matplotlib seaborn pandas numpy streamlit pillow streamlit-drawable-canvas joblib
@@ -120,99 +127,82 @@ pip install tensorflow-cpu
 
 ```bash
 python main.py
-This comprehensive training pipeline will:
+```
+- This comprehensive training pipeline will:
 
-Iris Classification: Train Decision Tree classifier and save model to models/iris_model.pkl
+ - **Iris Classification** - Train Decision Tree classifier and save model to models/iris_model.pkl
 
-Digit Recognition: Train CNN model with data augmentation and save to models/digit_recognition_model.h5
+ - **Digit Recognition** - Train CNN model with data augmentation and save to models/digit_recognition_model.h5
 
-Text Analysis: Perform NLP analysis on product reviews
+ - **Text Analysis** - Perform NLP analysis on product reviews
 
-Generate Visualizations: Create comprehensive analysis in output/ directory including:
+ - **Generate Visualizations** - Create comprehensive analysis in output/ directory including:
 
-Feature importance charts
+ - Feature importance charts
 
-Confusion matrices
+ - Confusion matrices
 
-Training history plots
+ - Training history plots
 
-Sentiment analysis results
+ - Sentiment analysis results
 
-Entity recognition visualizations
+ - Entity recognition visualizations
 
-Launch Interactive Web Application
+ - Launch Interactive Web Application
 
-bash
+```bash
 streamlit run app.py
-The application will open in your default browser at http://localhost:8501
+
+The application will open in your default browser at: [http://localhost:8501](http://localhost:8501)
+```
 ---
 
 ## 🧠 Machine Learning Models
-1. 🧩 Handwritten Digit Recognition
-Architecture: Enhanced CNN with 5 convolutional and 3 dense layers
 
-Features: Batch normalization, dropout, data augmentation
+### 1. 🧩 Handwritten Digit Recognition
+- **Architecture**: Enhanced CNN with 5 convolutional and 3 dense layers
+- **Features**: Batch normalization, dropout, data augmentation
+- **Accuracy**: >98% on MNIST test set
+- **Input**: 28×28 grayscale images
+- **Output**: Digit classification (0–9)
 
-Accuracy: >98% on MNIST test set
+### 2. 🌸 Iris Classification
+- **Algorithm**: Decision Tree Classifier (max_depth=3)
+- **Features**: Sepal length, sepal width, petal length, petal width
+- **Classes**: Setosa, Versicolor, Virginica
+- **Accuracy**: >95%
+- **Real-time Prediction**: Input measurements for instant species classification
 
-Input: 28×28 grayscale images
+### 3. 💬 Text Analysis
+- **Sentiment Analysis**: Rule-based approach with custom lexicons
+- **Named Entity Recognition**: spaCy for extracting products and brands
+- **Pattern Matching**: Phrase matcher for product detection
+- **Visualization**: Sentiment distribution and entity type analysis
 
-Output: Digit classification (0–9)
+---
 
-2. 🌸 Iris Classification
-Algorithm: Decision Tree Classifier (max_depth=3)
+## 🎯 Web Application Features
 
-Features: Sepal length, sepal width, petal length, petal width
+### 1. ✏️ Digit Recognition Tab
+- **Interactive Canvas**: Draw digits with real-time classification
+- **Image Upload**: Supports PNG, JPG, and JPEG formats
+- **Sample Testing**: Includes pre-generated digits for model verification
+- **Confidence Scoring**: Displays probability distributions and confidence levels
+- **Download Functionality**: Save your drawings as PNG files
 
-Classes: Setosa, Versicolor, Virginica
+### 2. 🌺 Iris Classification Tab
+- **Real-time Prediction**: Input flower measurements for instant species classification
+- **Dataset Analysis**: Explore comprehensive visualizations of the Iris dataset
+- **Feature Importance**: View visual representations of key features
+- **Performance Metrics**: Displays model accuracy, precision, and recall
+- **Interactive Charts**: Analyze feature distributions and correlation heatmaps
 
-Accuracy: >95%
-
-Real-time Prediction: Input measurements for instant species classification
-
-3. 💬 Text Analysis
-Sentiment Analysis: Rule-based approach with custom lexicons
-
-Named Entity Recognition: spaCy for extracting products and brands
-
-Pattern Matching: Phrase matcher for product detection
-
-Visualization: Sentiment distribution and entity type analysis
-
-🎯 Web Application Features
-1. ✏️ Digit Recognition Tab
-Interactive Canvas: Draw digits with real-time classification
-
-Image Upload: Supports PNG, JPG, and JPEG formats
-
-Sample Testing: Includes pre-generated digits for model verification
-
-Confidence Scoring: Displays probability distributions and confidence levels
-
-Download Functionality: Save your drawings as PNG files
-
-2. 🌺 Iris Classification Tab
-Real-time Prediction: Input flower measurements for instant species classification
-
-Dataset Analysis: Explore comprehensive visualizations of the Iris dataset
-
-Feature Importance: View visual representations of key features
-
-Performance Metrics: Displays model accuracy, precision, and recall
-
-Interactive Charts: Analyze feature distributions and correlation heatmaps
-
-3. 📝 Text Analysis Tab
-Sample Reviews: Includes pre-loaded product reviews for demonstration
-
-Custom Text Input: Analyze your own text or reviews
-
-Sentiment Detection: Classify text as Positive, Negative, or Neutral with confidence scores
-
-Entity Extraction: Identify product names, brands, and organizations using NLP
-
-Visual Analytics: View sentiment distributions and entity type charts
-
+### 3. 📝 Text Analysis Tab
+- **Sample Reviews**: Includes pre-loaded product reviews for demonstration
+- **Custom Text Input**: Analyze your own text or reviews
+- **Sentiment Detection**: Classify text as Positive, Negative, or Neutral with confidence scores
+- **Entity Extraction**: Identify product names, brands, and organizations using NLP
+- **Visual Analytics**: View sentiment distributions and entity type charts
 ---
 
 ## 📊 Model Performance
