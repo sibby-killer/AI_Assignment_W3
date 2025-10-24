@@ -87,15 +87,15 @@ streamlit run app.py
 deactivate
 ```
 
-2. Using Conda
+### 2. Using Conda
 ```bash
 
 # Create conda environment
 conda create -n ai_assignment_w3 python=3.9
 conda activate ai_assignment_w3
-```
 
 # Install packages
+```bash
 pip install tensorflow scikit-learn spacy matplotlib seaborn pandas numpy streamlit pillow streamlit-drawable-canvas joblib
 
 # Download spaCy model
@@ -107,8 +107,9 @@ streamlit run app.py
 
 # Deactivate environment
 conda deactivate
-3. Quick Setup with pipreqs
-bash
+ ```
+### 3. Quick Setup with pipreqs
+```bash
 # Generate requirements from actual code usage
 pip install pipreqs
 pipreqs . --encoding utf-8 --force
@@ -118,6 +119,7 @@ pip install -r requirements.txt
 
 # Optional: CPU-only TensorFlow (if GPU not available)
 pip install tensorflow-cpu
+ ```
 
 ---
 
