@@ -21,7 +21,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, class
 # Page configuration
 st.set_page_config(
     page_title="Digital Vision AI",
-    page_icon="🔢",
+    page_icon="🧠",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -623,7 +623,7 @@ def display_text_analysis_results(reviews, nlp=None):
 
 def main():
     # Header
-    st.markdown('<div class="main-header">🔢 Digital Vision AI</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">🧠 Digital Vision AI</div>', unsafe_allow_html=True)
     st.markdown("### Complete Machine Learning Pipeline: Digit Recognition, Iris Classification & Text Analysis")
     
     # Initialize models
