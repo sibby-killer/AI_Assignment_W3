@@ -46,7 +46,7 @@ This project integrates Classical Machine Learning, Deep Learning, and Natural L
 - │ ├── digit_recognition/
 - │ └── nlp_analysis/
 
-
+---
 ## 🛠️ Installation
 
 1. Using `venv` – ✅ *Recommended* **
@@ -82,7 +82,7 @@ streamlit run app.py
 
 # Deactivate environment when done
 deactivate
-🧬 Method 2: Using Conda
+2. Using Conda
 bash
 # Create conda environment
 conda create -n ai_assignment_w3 python=3.9
@@ -100,7 +100,7 @@ streamlit run app.py
 
 # Deactivate environment
 conda deactivate
-⚡ Method 3: Quick Setup with pipreqs
+3. Quick Setup with pipreqs
 bash
 # Generate requirements from actual code usage
 pip install pipreqs
@@ -111,6 +111,8 @@ pip install -r requirements.txt
 
 # Optional: CPU-only TensorFlow (if GPU not available)
 pip install tensorflow-cpu
+
+---
 
 ## 🚀 Usage
 
@@ -143,8 +145,9 @@ Launch Interactive Web Application
 bash
 streamlit run app.py
 The application will open in your default browser at http://localhost:8501
+---
 
-🧠 Machine Learning Models
+## 🧠 Machine Learning Models
 1. 🧩 Handwritten Digit Recognition
 Architecture: Enhanced CNN with 5 convolutional and 3 dense layers
 
@@ -209,6 +212,9 @@ Sentiment Detection: Classify text as Positive, Negative, or Neutral with confid
 Entity Extraction: Identify product names, brands, and organizations using NLP
 
 Visual Analytics: View sentiment distributions and entity type charts
+
+---
+
 ## 📊 Model Performance
 
 | Model               | Accuracy | Precision | Recall | Training Time | Key Features                        |
@@ -216,6 +222,7 @@ Visual Analytics: View sentiment distributions and entity type charts
 | **Digit Recognition** | 98.2%    | 98.1%     | 98.0%   | ~5 minutes    | CNN with data augmentation          |
 | **Iris Classification** | 96.7%  | 96.5%     | 96.7%   | <1 second     | Decision Tree visualization         |
 | **Text Analysis**     | -        | -         | -       | <1 second     | spaCy NER + rule-based sentiment    |
+---
 
 ## 👥 Team
 
@@ -226,13 +233,17 @@ Visual Analytics: View sentiment distributions and entity type charts
 | **Hannah Shekinah**   | AI Ethics & Sustainability Specialist     | hannahshekinah@gmail.com         |
 | **Joelina Quarshie**  | Technical Writer & Research Coordinator   | joelinakq@gmail.com              |
 
+---
+
 ## 🙏 Acknowledgments
 
 - MNIST dataset providers for digit recognition  
 - Scikit-learn team for machine learning tools  
 - Streamlit team for the amazing web framework  
 - TensorFlow team for deep learning capabilities  
-- spaCy team for natural language processing tools  
+- spaCy team for natural language processing tools
+
+---
 
 ## ⭐ Support
 If you find this project helpful, please give it a star! Your support helps us continue improving and maintaining this application.
