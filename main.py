@@ -26,6 +26,16 @@ warnings.filterwarnings('ignore')
 plt.style.use('default')
 sns.set_palette("husl")
 
+# Create project directories
+os.makedirs('output/iris_analysis', exist_ok=True)
+os.makedirs('output/digit_recognition', exist_ok=True)
+os.makedirs('output/nlp_analysis', exist_ok=True)
+os.makedirs('models', exist_ok=True)
+
+print("🚀 Digital Vision AI - Starting Complete ML Pipeline...")
+print("="*60)
+print(f"📅 Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
 # TensorFlow availability check
 try:
     import tensorflow as tf
@@ -47,20 +57,11 @@ try:
     import spacy
     from spacy.matcher import PhraseMatcher
     SPACY_AVAILABLE = True
+    print("✅ spaCy loaded successfully")
 except ImportError:
     print("❌ spaCy not available")
     print("💡 Install with: pip install spacy")
     SPACY_AVAILABLE = False
-
-# Create project directories
-os.makedirs('output/iris_analysis', exist_ok=True)
-os.makedirs('output/digit_recognition', exist_ok=True)
-os.makedirs('output/nlp_analysis', exist_ok=True)
-os.makedirs('models', exist_ok=True)
-
-print("🚀 Digital Vision AI - Starting Complete ML Pipeline...")
-print("="*60)
-print(f"📅 Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 # =============================================================================
 # MODULE 1: IRIS CLASSIFICATION
