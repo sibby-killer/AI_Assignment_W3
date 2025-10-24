@@ -45,7 +45,7 @@ This project integrates Classical Machine Learning, Deep Learning, and Natural L
 - │ ├── iris_analysis/
 - │ ├── digit_recognition/
 - │ └── nlp_analysis/
-- │ └── sreenshots/ #screenshots of the live demo app
+- ├── sreenshots/ #screenshots of the live demo app
 
 
 ---
