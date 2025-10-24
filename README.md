@@ -34,23 +34,22 @@ This project integrates Classical Machine Learning, Deep Learning, and Natural L
 - 📈 Interactive charts, confusion matrices, performance summaries, and comprehensive visualizations
 
 ## 📁 Project Structure
-AI_Assignment_W3/
-├── app.py # Streamlit main application with 3-tab navigation
-├── main.py # Complete ML pipeline training and evaluation
-├── requirements.txt # Dependencies
-├── models/ # Saved trained models
-│ ├── digit_recognition_model.h5
-│ └── iris_model.pkl
-├── output/ # Visualizations and analysis results
-│ ├── iris_analysis/
-│ ├── digit_recognition/
-│ └── nlp_analysis/
+- AI_Assignment_W3/
+- ├── app.py # Streamlit main application with 3-tab navigation
+- ├── main.py # Complete ML pipeline training and evaluation
+- ├── requirements.txt # Dependencies
+- ├── models/ # Saved trained models
+- │ ├── digit_recognition_model.h5
+- │ └── iris_model.pkl
+- ├── output/ # Visualizations and analysis results
+- │ ├── iris_analysis/
+- │ ├── digit_recognition/
+- │ └── nlp_analysis/
 
-text
 
 ## 🛠️ Installation
 
-### 🧩 Method 1: Using `venv` – ✅ *Recommended*
+1. Using `venv` – ✅ *Recommended* **
 
 ```bash
 # Clone the repository
