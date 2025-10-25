@@ -220,12 +220,13 @@ Visual Analytics: View sentiment distributions and entity type charts
 
 ## 👥 Team
 
-| Name               | Role                                      | Email                           |
-|--------------------|-------------------------------------------|----------------------------------|
-| **Christine Mirimba** | Machine Learning Engineer                 | mirimbachristine@gmail.com       |
-| **Alfred Nyongesa**   | Data Analyst & System Optimization        | alfred.dev8@gmail.com            |
-| **Hannah Shekinah**   | AI Ethics & Sustainability Specialist     | hannahshekinah@gmail.com         |
-| **Joelina Quarshie**  | Technical Writer & Research Coordinator   | joelinakq@gmail.com              |
+| Name | Role | Email |
+|------|------|-------|
+| **Christine Mirimba** | Machine Learning Engineer | [mirimbachristine@gmail.com](mailto:mirimbachristine@gmail.com) |
+| **Alfred Nyongesa** | Data Analyst & System Optimization | [alfred.dev8@gmail.com](mailto:alfred.dev8@gmail.com) |
+| **Hannah Shekinah** | AI Ethics & Sustainability Specialist | [hannahshekinah@gmail.com](mailto:hannahshekinah@gmail.com) |
+| **Joelina Quarshie** | Technical Writer & Research Coordinator | [joelinakq@gmail.com](mailto:joelinakq@gmail.com) |
+| **Jemmimah Mwithalii** | Model Testing & Quality Assurance Specialist | [jemmimahmwithalii@gmail.com](mailto:jemmimahmwithalii@gmail.com) |
 
 ## 🙏 Acknowledgments
 
